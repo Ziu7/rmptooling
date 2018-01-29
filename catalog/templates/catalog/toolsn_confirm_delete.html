@@ -1,0 +1,31 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+{% if perms.catalog.can_edit_tool %}
+
+	<h1>{{ toolsn }}</h1>
+	<h2>{{ toolsn.tool.name }}</h2>
+	<table width= "500px">
+		<tr><th width="150px">Location:</th><td>{{ toolsn.location }}</td></tr>
+		<tr><th>PM Complete?:</th><td>{{ toolsn.pm }}</td></tr>
+		<tr><th>Needs Repair?:</th><td>{{ toolsn.repair }}</td></tr>
+		<tr><th>Last Checked:</th><td>{{ toolsn.checkdate }}</td></tr>
+		<tr><th>Borrower:</th><td>{{ toolsn.borrower }}</td></tr>
+		<tr><th>Comments:</th><td>{{ toolsn.comments }}</td></tr>
+	</table>
+
+	<p>Are you sure you want to <strong>DELETE</strong> tool instance {{ toolsn }}?</p>
+
+		<form action="" method="post">
+			{% csrf_token %}
+			<input type="submit" value="DELETE" />
+		</form>
+
+{% else %}
+
+	<p>You do not have permission to delete tools.</p>
+
+{% endif %}
+
+{% endblock %} 

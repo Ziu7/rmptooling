@@ -1,0 +1,71 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+	<h1>Vault Log</h1>
+
+	{% if toolsn_list %}
+	<table id="vaultlog_list" class="table table-striped table-hover table-responsive">
+		<thead>
+			<tr>
+				<th>Barcode ID</th>
+				<th>Tool Number</th>
+				<th>Vault Status</th>
+				<th>Vault In Time</th>
+				<th>Vault Out Time</th>
+			</tr>
+		</thead>
+
+		<tbody>
+			{% for toolsn in toolsn_list %}
+				<tr>
+
+					<td>{{ toolsn.id }}</td>
+					<td><a href="{% url 'toolsn-detail' toolsn.id %}">{{ toolsn }}</a></td>
+					{% if toolsn.vault == 'In' %}
+						<td><a href="{% url 'vault-update-out' toolsn.id %}">{{ toolsn.vault }}</a></td>
+					{% else %}
+						<td><a href="{% url 'vault-update-in' toolsn.id %}">{{ toolsn.vault }}</a></td>
+					{% endif %}
+						<td>{{ toolsn.vaultintime }}</td>
+						<td>{{ toolsn.vaultouttime }}</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+
+	{% else %}
+		<p>There are no tools in the database. </p>
+
+	{% endif %}
+
+<!-- table filter js -->
+	<script language="javascript" type="text/javascript">
+		var props02 = {
+			col_2:'select',
+			col_3:'none',
+			col_4:'none',
+			col_5:'none',
+			};
+
+		var tf03 = new TableFilter("vaultlog_list",props02);
+		tf03.init();
+	</script>
+
+{% endblock %}
+
+<!--
+-- Barcode input form--
+
+	<strong>BARCODE ENTRY</strong>
+	<form id="formin">
+		<input type ="text" id="barcodein" autofocus="autofocus"/>
+		<input type="submit" value="IN" onClick="javascript: window.open('/catalog/vaultlog/' +document.getElementById('barcodein').value +'/in'); window.close();" />
+	</form>
+	<form id="formout">
+		<input type ="text" id="barcodeout"/>
+		<input type="submit" value="OUT" onClick="javascript: window.open('/catalog/vaultlog/' +document.getElementById('barcodeout').value +'/out'); window.close();" />
+	</form>
+
+	<br>
+
+-->

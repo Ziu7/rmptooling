@@ -1,0 +1,33 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+	{% if perms.catalog.can_log_vault %}
+
+		<h1>{{ toolsn }}</h1>
+		<h2>{{ toolsn.tool.name }}</h2>
+		<br>
+
+			{% if toolsn.vault == "In" %}
+				<p>{{ toolsn }} is currently IN the vault.</p>
+			{% else %}
+				<p>Current Vault Status: <strong>{{ toolsn.vault }}</strong></p>
+					<form action="" method="post">
+						{% csrf_token %}
+
+						<table>
+							{{ form.as_table }}
+						</table>
+						<input type="submit" value="Submit" />
+					</form>
+			{% endif %}
+
+	{% else %}
+		<p>You do not have permission to edit vault status.</p>
+	{% endif %}
+
+{% endblock %}
+
+<!--
+
+
+-->

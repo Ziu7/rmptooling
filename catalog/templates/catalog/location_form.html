@@ -1,0 +1,30 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+	<br>
+	
+	{% if perms.catalog.can_edit_tool %}
+
+		<form action="" method="post">
+			{% csrf_token %}
+
+			<table>
+				{{ form.as_table }}
+			</table>
+			<input type="submit" value="Submit" />
+		</form>
+
+	{% else %}
+		<p>You do not have permission to add locationss</p>
+	{% endif %}
+
+{% endblock %} 
+
+<!--
+	{% if location_list %}
+		good
+	{% else %}
+		not good
+	{% endif %}				
+
+-->

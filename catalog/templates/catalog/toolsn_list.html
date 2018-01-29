@@ -1,0 +1,65 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+	<h1>Tool Inventory</h1>
+
+<!-- Barcode input form -->
+	<form id="formtoolsn">
+		<input type ="text" id="toolsnid" placeholder ="Scan Barcode" autofocus="autofocus"/>
+		<input type="submit" value="submit" style="display: none;" onClick="javascript: window.open('/catalog/toolsn/' +document.getElementById('toolsnid').value); window.close();" />
+	</form>
+	<br>
+
+	{% if toolsn_list %}
+	<table id="toolsn_list" class="table table-striped table-hover table-responsive">
+		<thead>
+			<tr>
+				<th>Tool Number (Name) - SN</th>
+				<th>Location</th>
+				<th>Needs Repair?</th>
+				<th>PM Done?</th>
+				<th>Primary Discipline</th>
+				<th>Secondary Discipline</th>
+			</tr>
+		</thead>
+
+		<tbody>
+			{% for toolsn in toolsn_list %}
+				<tr class="{% if not toolsn.pm %}warning{% endif %} {% if toolsn.repair%}danger{% endif %}" >
+					<td><a href="{% url 'toolsn-detail' toolsn.id %}">{{ toolsn }}</a></td>
+					<td><a href="{% url 'location-detail' toolsn.location.id %}">{{ toolsn.location }}</a></td>
+					<td>{{ toolsn.repair }}</td>
+					<td>{{ toolsn.pm }}</td>
+					<td>{{ toolsn.tool.primdisc }}</td>
+					<td>{{ toolsn.tool.secdisc }}</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+
+	{% else %}
+		<p>There are no tools in the database. </p>
+
+	{% endif %}
+
+<!-- table filter js -->
+	<script language="javascript" type="text/javascript">
+		var props02 = {
+			col_1:'select',
+			col_2:'select',
+			col_3:'select',
+			col_4:'select',
+			col_5:'select',
+			col_6:'select',
+			};
+
+		var tf02 = new TableFilter("toolsn_list",props02);
+		tf02.init();
+	</script>
+
+{% endblock %}
+
+<!--
+
+
+-->

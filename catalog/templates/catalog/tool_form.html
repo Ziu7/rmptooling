@@ -1,0 +1,26 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+	<br>
+
+	{% if perms.catalog.can_edit_tool %}
+
+		<form action="" method="post">
+			{% csrf_token %}
+
+			<table>
+				{{ form.as_table }}
+			</table>
+			<input type="submit" value="Submit" />
+		</form>
+
+	{% else %}
+		<p>You do not have permission to add tool.</p>
+	{% endif %}
+
+{% endblock %} 
+
+<!--
+				
+
+-->

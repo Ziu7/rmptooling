@@ -1,0 +1,43 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+	<h1>{{ tool.num }}</h1>
+	<h2>{{ tool.name }}</h2>
+
+	<strong>Primary Discipline:</strong> {{ tool.primdisc }}
+	<br>
+	<strong>Secondary Discipline:</strong> {{ tool.secdisc }}
+	<br>
+	<strong>DNGS CatID:</strong> {{ tool.dcatid }}
+	<br>
+	<strong>PNGS CatID:</strong> {{ tool.pcatid }}
+	<br>
+	<strong>Drawings:</strong> {{ tool.draw }}
+	<br>
+	<strong>Tool Notes:</strong> {{ tool.notes }}
+	<br><br>
+
+	<!-- <div style="margin-left:20px;margin-top:20px"> -->
+
+		Quantity: {{ tool.toolsn_set.count }}
+		<br><br>
+		<a href="{% url 'toolsn-create' tool.id %}"> Add new SN </a>
+
+		<table width= "500px">
+			{% for toolsn in tool.toolsn_set.all %}
+				<tr><th><a href="{% url 'toolsn-detail' toolsn.id %}">{{ toolsn }}</a></th></tr>
+				<tr><th width="150px">Location:</th><td>{{ toolsn.location }}</td></tr>
+				<tr><th>PM Complete?:</th><td>{{ toolsn.pm }}</td></tr>
+				<tr><th>Needs Repair?:</th><td>{{ toolsn.repair }}</td></tr>
+				<tr><th>Last Checked:</th><td>{{ toolsn.checkdate }}</td></tr>
+				<tr><th>Comments:</th><td>{{ toolsn.comments }}</td></tr>				
+			{% endfor %}
+		</table>	
+		<hr>	
+{% endblock %}
+
+<!--
+
+
+				<tr><th>Borrower:</th><td>{{ toolsn.borrower }}</td></tr>
+-->

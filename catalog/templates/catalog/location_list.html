@@ -1,0 +1,39 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+	<h1>Location List</h1>
+
+	{% if location_list %}
+	<table class="table table-striped table-hover table-responsive">
+		<thead>
+			<tr>
+				<th>Location</th>
+				<th>Address</th>
+				<th>Tools at location</th>
+				<th>Notes</th>
+			</tr>
+		</thead>
+		
+		<tbody>
+			{% for loc in location_list %}		
+				<tr>
+					<td><a href="{% url 'location-detail' loc.id %}">{{ loc.name }}</a></td>
+					<td>{{loc.address}}</td>
+					<td>{{loc.toolsn_set.count}}
+					<td>{{loc.notes}}</td>
+				</tr>
+
+			{% endfor %}
+		</tbody>
+
+	</table>
+
+	{% else %}
+		<p>There are currently no entered locations </p>
+	
+	{% endif %}
+<a href="{% url 'location-create' %}"> Add New Location </a>
+
+<hr>
+
+{% endblock %} 

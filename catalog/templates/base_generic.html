@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lan='en'>
+<head>
+
+	{%block title %}<title>RMP Tooling Database</title>{% endblock %}
+	<meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+<!--
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+-->
+	{% load static %}
+	<link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+	<script src="{% static 'js/jquery.js' %}"></script>
+	<script src="{% static 'js/bootstrap.js' %}"></script>
+
+	<!-- Add additional CSS in static file -->
+	<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+	<!-- 
+	Add additional CSS for tables	
+	<link rel="stylesheet" href="{% static 'css/minimal-table.css' %}" type="text/css"> 
+	-->
+
+	<!-- Add javascript for table filters -->
+	<script type="text/javascript" language="javascript" src="{% static 'js/tablefilter/tablefilter.js' %}"></script>
+
+<!-- Add javascript for table sorter -->
+	<script type="text/javascript" language="javascript" src="{% static 'js/tablesorter/jquery.tablesorter.js' %}"></script>
+
+<script>
+$(function() {
+	var $sidebar = $("#sidebar"),
+	$window = $(window),
+	offset = $sidebar.offset(),
+	topPadding = 20;
+
+	$window.scroll(function() {
+		if($window.scrollTop() > offset.top) {
+			$sidebar.stop().animate({
+				marginTop: $window.scrollTop() - offset.top + topPadding
+			});
+		} else {
+			$sidebar.stop().animate({
+				marginTop: 0
+			});
+		}
+	});
+});
+
+</script>
+</head>
+
+<body>
+
+	<div class="container-fluid">
+
+		<div class="row">
+			<div class="col-sm-2">
+				{% block sidebar %}
+					<ul class="sidebar-nav" id="sidebar">
+						<li><a href="{% url 'index' %}">Home</a></li>
+						<br>
+
+						<!-- Authenticated user options -->
+						{% if user.is_authenticated %}
+
+							<li><a href="{% url 'tool' %}">Tool Catalog</a></li>
+							<li><a href="{% url 'toolsn' %}">Tool Inventory</a></li>
+							<li><a href="{% url 'location' %}">Locations List</a></li>
+							<br>
+							<li><a href="{% url 'toolsnrepair' %}">Repair List</a></li>
+							<li><a href="{% url 'toolsnpm' %}">PM List</a></li>
+							<br>
+							<li><a href="{% url 'vaultlog' %}">Vault Log</a></li>
+							<br>
+
+							<li><a href="{% url 'tool-create' %}"> Add New Tool </a></li>				
+							<br>
+							<li>User: {{ user.get_full_name }} </li>
+
+							<li><a href= "{% url 'my-tools' %}">My borrowed tools</a></li>
+							
+							<!-- If logged in as tool administrator options -->
+							{% if perms.catalog.can_mark_returned %}
+								<li><a href = "{% url 'loaned-tools' %}">Manage loaned tools</a></li>
+							{% endif %}
+						
+							<!-- Login/logout authenticated options -->
+							<li><a href="{% url 'logout'%}?next{{request.path}}">Logout</a></li>
+						{% else %}
+							<li><a href="{% url 'login'%}?next{{request.path}}">Login</a></li>
+						{% endif %}
+
+					</ul>
+				{% endblock %}
+			</div>
+
+
+			<div class="col-sm-10 ">
+				{% block content %}{% endblock %}
+
+				{% block pagination %}
+
+					{% if is_paginated %}
+						<div class="pagination">
+							<span class="page-links">
+								{% if page_obj.has_previous %}
+									[<a href="{{ request.path }}?page=1"> << </a>]
+									[<a href="{{ request.path }}?page={{ page_obj.previous_page_number }}"> < </a>]
+								{% endif %}
+								<span class="page-current">
+									{{ page_obj.number }} of {{page_obj.paginator.num_pages }}
+								</span>
+								{% if page_obj.has_next %}
+									[<a href="{{ request.path }}?page={{ page_obj.next_page_number }}"> > </a>]
+									[<a href="{{ request.path }}?page={{ page_obj.paginator.num_pages }}"> >> </a>]
+								{% endif %}
+							</span>
+						</div>
+					{% endif %}
+
+				{% endblock %}
+
+			</div>
+		</div>
+	</div>
+</body>
+</html>
