@@ -81,7 +81,11 @@ class ToolSN (models.Model):
 	@property
 	def is_checkedout(self):
 		#Check if the most recent vaultlog hasn't been returned yet
-		return not self.vaultlog_set.orderby('-borrowdate')[:1][0].isreturned 
+		return not self.vaultlog_set.latest().isreturned
+
+	def mostRecentBorrow(self):
+		#Return the most recent vault log
+		return self.vaultlog_set.latest()
 
 	class Meta:
 		ordering = ["tool","sn"] #order by tool number when returned in a query
@@ -95,13 +99,18 @@ class VaultLog(models.Model):
 	toolsn = models.ForeignKey(ToolSN, on_delete=models.DO_NOTHING, verbose_name="loaned tool")
 	borrower = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="tool loaned to", related_name="borrower_log")
 	approvedby = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="who approved the borrow", related_name="manager_log")
-	borrowdate = models.DateTimeField(verbose_name="time tool was checked out")
-	returndate = models.DateTimeField(verbose_name="time tool must be returned")
+	borrowdate = models.DateField(verbose_name="time tool was checked out")
+	returndate = models.DateField(verbose_name="time tool must be returned")
 	isreturned = models.BooleanField(verbose_name="has tool been returned")
+	notes = models.TextField(verbose_name="Logging Notes", null=True, blank=True)
 
 	@property
 	def is_overdue(self):
-		return date.today > self.returndate
+		return date.today() > self.returndate
+
+	class Meta:
+		verbose_name = ('Tool Vault Log')
+		get_latest_by = ('borrowdate')
 
 #Creatable tasks that can show what tools to take on what jobs, what disciplines they fall under, etc.
 class Job(models.Model):

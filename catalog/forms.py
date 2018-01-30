@@ -6,10 +6,10 @@ from .models import Discipline, Location, Tool, ToolSN
 
 # Renew tool form
 class RenewToolForm (forms.Form):
-	renew_date = forms.DateField(help_text="Enter date between now and 4 weeks.")
+	expiry_date = forms.DateField(help_text="Enter date between now and 4 weeks.")
 
-	def clean_renew_date(self):
-		data = self.cleaned_data['renew_date']
+	def clean_expiry_date(self):
+		data = self.cleaned_data['expiry_date']
 
 		#check date is not in the past.
 		if data < datetime.date.today():

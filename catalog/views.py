@@ -1,20 +1,19 @@
+from datetime import date, datetime
+from django.shortcuts import get_object_or_404
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views import generic
+from django.http import HttpResponseRedirect
+from django.urls import reverse, reverse_lazy #used to generate urls by reversing the url pattern
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required #login requirement for function based views
 from django.contrib.auth.mixins import LoginRequiredMixin #login requirement for class based views
 from django.contrib.auth.decorators import permission_required #permission requirement for function based views
 from django.contrib.auth.mixins import PermissionRequiredMixin #permission requirement for class based views
-
-from .models import Discipline, Location, Tool, ToolSN
-
-from .forms import VaultUpdateInForm, VaultUpdateOutForm
-
-from django.views import generic
-
-from django.db.models import Count, Q
-
-from datetime import date, datetime
-
+from django.contrib.auth.models import User #for use with methods associated with users
+from django.db import models
 from django import forms #form class for creating user input forms
+from .models import Discipline, Location, Tool, ToolSN, VaultLog
+from .forms import VaultUpdateInForm, VaultUpdateOutForm, RenewToolForm, NewLocationForm
 
 #View for index (regular function)
 @login_required
@@ -69,78 +68,64 @@ class ToolSNDetailView(LoginRequiredMixin, generic.DetailView):
 
 #View for tools on loan by User
 class LoanedToolsByUserListView(LoginRequiredMixin, generic.ListView):
-	model = ToolSN
+	model = VaultLog
 	template_name ='catalog/toolsn_list_borrowed_user.html'
 	def get_queryset(self):
-		return ToolSN.objects.filter(borrower=self.request.user) #.order_by(ToolSN.checkdate) #can also use .filter()
+		return VaultLog.objects.filter(isreturned = False, borrower=self.request.user).select_related()
 
 #View for tools on loan by all users
 class LoanedToolsByAllListView(PermissionRequiredMixin, generic.ListView):
 	permission_required = 'catalog.can_mark_returned'
-	model = ToolSN
+	model = VaultLog
 	template_name ='catalog/toolsn_list_borrowed_all.html'
 	def get_queryset(self):
-		return ToolSN.objects.exclude(borrower__isnull=True) #.order_by(ToolSN.checkdate) #can also use .filter()
+		return VaultLog.objects.filter(isreturned = False).select_related()
 
 #Vault Log View
 class VaultLogList(LoginRequiredMixin, generic.ListView):
-	model = ToolSN
+	model = VaultLog
+	#We want to get all of the vault log data and pre-grab any related data
 	def get_queryset(self):
-		return ToolSN.objects.filter(Q(vaultintime__isnull=False) | Q(vaultouttime__isnull=False))
-	template_name ='catalog/vaultlog_list.html'
+		return VaultLog.objects.select_related()
+	
+####################################### Renew Tool Form
 
-#############################FORMS: Fuction Based#############################
-from django.shortcuts import get_object_or_404
-from django.http import HttpResponseRedirect
-from django.urls import reverse #used to generate urls by reversing the url pattern
-import datetime
-
-from .forms import RenewToolForm, NewLocationForm
-
-#VIEW fuction for renewing tools - (Fuction based form)
 @permission_required('catalog.can_mark_returned') #can_mark_returned permission required to renew
 def renew_tool(request,pk):
 	tool_sn=get_object_or_404(ToolSN, pk=pk)
-
+	tool_log = tool_sn.mostRecentBorrow()
 	if request.method == 'POST':
 		#create a form instance and populate it with data from the request
 		form = RenewToolForm(request.POST)
 		#check if the form is valid:
 		if form.is_valid():
-			#process the data in form.cleaned_data as required
-			tool_sn.checkdate = form.cleaned_data['renew_date']
-			#tool_sn.borrower = User.objects.get(username="admin")
-			#tool_sn.location = Location.objects.get(location="Basement")
+			tool_log.borrowdate = date.today()
+			tool_log.returndate = form.cleaned_data['expiry_date']
+			tool_log.save()
 			tool_sn.save()
 			#redirect to a new URL:
 			return HttpResponseRedirect(reverse('loaned-tools'))
 	else:
-		default_renew_date =datetime.date.today() + datetime.timedelta(weeks=3) # default renew date + 3weeks
-		form = RenewToolForm(initial={'renew_date':default_renew_date,})
+		default_renew_date = date.today() + timedelta(weeks=3) # default renew date + 3weeks
+		form = RenewToolForm(initial={'expiry_date':default_renew_date,})
 
-	return render(request, 'catalog/tool_renew.html', {'form':form, 'toolsn':tool_sn})
+	return render(request, 'catalog/tool_renew.html', {'form':form, 'toolsn':tool_sn, 'log':tool_log })
 
 #############################FORMS: Class Based#############################
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.urls import reverse_lazy
-
 
 # Class based forms for MODEL: ToolSN
 class ToolSNCreate(LoginRequiredMixin, CreateView):
 	model = ToolSN
 	fields = ['tool','sn','location','pm','repair','checkdate','comments']
-	initial={'checkdate':datetime.date.today(),'tool': "Bolts"}
+	initial={'checkdate':date.today(),'tool': "Bolts"}
 
 	def get_success_url(self):
 		return reverse('tool-detail', kwargs={'pk': self.kwargs['pk']})
 
-from django.contrib.auth.models import User #for use with methods associated with users
-from django.db import models
-
 class ToolSNUpdate(LoginRequiredMixin, UpdateView):
 	model = ToolSN
 	fields = ['sn','location','pm','repair','checkdate','comments']
-	initial={'checkdate':datetime.date.today()}
+	initial={'checkdate':date.today()}
 
 	def get_success_url(self):
 		return reverse('toolsn-detail', kwargs={'pk': self.kwargs['pk']})
@@ -179,7 +164,7 @@ class VaultUpdateOut(LoginRequiredMixin, UpdateView):
 	template_name ='catalog/vaultlogout_form.html'	
 	model = ToolSN
 	form_class= VaultUpdateOutForm
-	initial={'vaultouttime': datetime.datetime.now, 'vault':'Out'}	
+	initial={'vaultouttime': datetime.now(), 'vault':'Out'}	
 
 	success_url = reverse_lazy('vaultlogout')
 
@@ -189,7 +174,7 @@ class VaultUpdateIn(LoginRequiredMixin, UpdateView):
 	template_name ='catalog/vaultlogin_form.html'	
 	model = ToolSN
 	form_class= VaultUpdateInForm
-	initial={'vaultintime': datetime.datetime.now, 'vault':'In'}
+	initial={'vaultintime': datetime.now(), 'vault':'In'}
 
 	success_url = reverse_lazy('vaultlogin')
 

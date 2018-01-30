@@ -25,7 +25,7 @@
 
 		<tbody>
 			{% for toolsn in toolsn_list %}
-				<tr class="{% if not toolsn.pm %}warning{% endif %} {% if toolsn.repair%}danger{% endif %}" >
+				<tr class="{% if not toolsn.pm %}table-warning{% endif %} {% if toolsn.repair%}table-danger{% endif %}" >
 					<td><a href="{% url 'toolsn-detail' toolsn.id %}">{{ toolsn }}</a></td>
 					<td><a href="{% url 'location-detail' toolsn.location.id %}">{{ toolsn.location }}</a></td>
 					<td>{{ toolsn.repair }}</td>

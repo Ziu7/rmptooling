@@ -21,7 +21,7 @@
 		
 		<tbody>
 			{% for tool in tool_list %}		
-				<tr {% if not tool.sufficienttools %}class="danger"{% endif %}>
+				<tr {% if not tool.sufficienttools %}class="table-danger"{% endif %}>
 					<td><a href="{{ tool.get_absolute_url }}">{{tool}}</a></td>
 					<td>{{ tool.minneeded }} </td>
 					<td>{{ tool.get_toolcount }} <span style="color:red">({{ tool.get_damagedtoolcount }})</span></td>

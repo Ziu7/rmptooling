@@ -2,12 +2,11 @@
 
 {% block content %}
 	<h1>Renew Borrowed Tools</h1>
-
-	
 	<ul>
-		<li>Renew: {{ toolsn.tool }} SN {{ toolsn.sn }}</li>
-		<li>Borrower: {{ toolsn.borrower }}</li>
-		<li>Check Date: {{ toolsn.checkdate }}</li>
+		<li>Renew: {{ toolsn }}</li>
+		<li>Borrower: {{ log.borrower }}</li>
+		<li>Date Checked Out: {{ log.borrowdate }}</li>
+		<li><b>Current Expiry Date: {{ log.returndate }}</b></li>
 	</ul>
 	<br>
 		<form action="" method="post">

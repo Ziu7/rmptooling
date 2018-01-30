@@ -3,38 +3,37 @@
 {% block content %}
 	<h1>Vault Log</h1>
 
-	{% if toolsn_list %}
+	{% if vaultlog_list %}
 	<table id="vaultlog_list" class="table table-striped table-hover table-responsive">
 		<thead>
 			<tr>
 				<th>Barcode ID</th>
 				<th>Tool Number</th>
-				<th>Vault Status</th>
-				<th>Vault In Time</th>
+				<th>Borrowed By</th>
+				<th>Approved By</th>
 				<th>Vault Out Time</th>
+				<th>Is it returned?</th>
 			</tr>
 		</thead>
 
 		<tbody>
-			{% for toolsn in toolsn_list %}
-				<tr>
-
-					<td>{{ toolsn.id }}</td>
-					<td><a href="{% url 'toolsn-detail' toolsn.id %}">{{ toolsn }}</a></td>
-					{% if toolsn.vault == 'In' %}
-						<td><a href="{% url 'vault-update-out' toolsn.id %}">{{ toolsn.vault }}</a></td>
-					{% else %}
-						<td><a href="{% url 'vault-update-in' toolsn.id %}">{{ toolsn.vault }}</a></td>
-					{% endif %}
-						<td>{{ toolsn.vaultintime }}</td>
-						<td>{{ toolsn.vaultouttime }}</td>
+			{% for log in vaultlog_list %}
+				<tr {% if log.is_overdue %} class="table-warning" {% endif %} >
+					<td>{{ log.toolsn_id }}</td>
+					<td><a href="{% url 'toolsn-detail' log.toolsn_id %}">{{ log.toolsn }}</a></td>
+						<td><a href="{% url 'vault-update-out' log.toolsn_id %}"></a></td>
+						<td><a href="{% url 'vault-update-in' log.toolsn_id %}"></a></td>
+						<td>{{ log.borrower }}</td>
+						<td>{{ log.approvedby }}</td>
+						<td>{{ log.borrowdate }}</td>
+						<td>{{ log.returned }}</td>
 				</tr>
 			{% endfor %}
 		</tbody>
 	</table>
 
 	{% else %}
-		<p>There are no tools in the database. </p>
+		<p>There are no borrowing logs </p>
 
 	{% endif %}
 
