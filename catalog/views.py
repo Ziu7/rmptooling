@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from django.shortcuts import get_object_or_404
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views import generic
@@ -99,8 +99,11 @@ def renew_tool(request,pk):
 		form = RenewToolForm(request.POST)
 		#check if the form is valid:
 		if form.is_valid():
-			tool_log.borrowdate = date.today()
-			tool_log.returndate = form.cleaned_data['expiry_date']
+			newLog = VaultLog(toolsn=tool_sn, borrower=tool_log.borrower, approvedby = request.user, borrowdate = date.today(), returndate = form.cleaned_data['expiry_date'])
+			newLog.save()
+			tool_log.isreturned = True
+			tool_log.notes = "Return date extended" 
+			#Add to notes everytime something is renewed, or kill the previous entry and add a new one. Adding to notes what happened.
 			tool_log.save()
 			tool_sn.save()
 			#redirect to a new URL:
@@ -158,8 +161,8 @@ class LocationUpdate(LoginRequiredMixin, UpdateView):
 	fields = ['id','location']
 	success_url = reverse_lazy('location')
 
-#VaultStatusUpdateOut
-class VaultUpdateOut(LoginRequiredMixin, UpdateView):
+#Tool Checkout
+class VaultUpdate(LoginRequiredMixin, UpdateView):
 	permission_required = 'catalog.can_log_vault'
 	template_name ='catalog/vaultlogout_form.html'	
 	model = ToolSN
@@ -167,16 +170,6 @@ class VaultUpdateOut(LoginRequiredMixin, UpdateView):
 	initial={'vaultouttime': datetime.now(), 'vault':'Out'}	
 
 	success_url = reverse_lazy('vaultlogout')
-
-#VaultStatusUpdateIn
-class VaultUpdateIn(LoginRequiredMixin, UpdateView):
-	permission_required = 'catalog.can_log_vault'
-	template_name ='catalog/vaultlogin_form.html'	
-	model = ToolSN
-	form_class= VaultUpdateInForm
-	initial={'vaultintime': datetime.now(), 'vault':'In'}
-
-	success_url = reverse_lazy('vaultlogin')
 
 ###########FUNCTION BASED LOCATION CREATE FORM###########
 def add_location(request):

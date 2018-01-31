@@ -85,7 +85,7 @@ class ToolSN (models.Model):
 
 	def mostRecentBorrow(self):
 		#Return the most recent vault log
-		return self.vaultlog_set.latest()
+		return self.vaultlog_set.filter(isreturned=0).latest()
 
 	class Meta:
 		ordering = ["tool","sn"] #order by tool number when returned in a query
@@ -101,9 +101,8 @@ class VaultLog(models.Model):
 	approvedby = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="who approved the borrow", related_name="manager_log")
 	borrowdate = models.DateField(verbose_name="time tool was checked out")
 	returndate = models.DateField(verbose_name="time tool must be returned")
-	isreturned = models.BooleanField(verbose_name="has tool been returned")
+	isreturned = models.BooleanField(verbose_name="has tool been returned", default='0')
 	notes = models.TextField(verbose_name="Logging Notes", null=True, blank=True)
-
 	@property
 	def is_overdue(self):
 		return date.today() > self.returndate

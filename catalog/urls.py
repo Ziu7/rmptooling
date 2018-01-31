@@ -33,9 +33,8 @@ urlpatterns = [
 	#Tool forms (Create)
 	url(r'^tool/create$', views.ToolCreate.as_view(), name='tool-create'),
 
-	#Vault Status Update Forms
-	url(r'^vaultlog/(?P<pk>[-\w]+)/out$', views.VaultUpdateOut.as_view(), name='vault-update-out'),
-	url(r'^vaultlog/(?P<pk>[-\w]+)/in$', views.VaultUpdateIn.as_view(), name='vault-update-in'),
+	#Tool Checkout Forms
+	url(r'^vaultlog/(?P<pk>[-\w]+)/(?P<action>[-\w]+)$', views.VaultUpdate.as_view(), name='vault-update'),
 
 	#Location forms (Create, Update)
 	url(r'^location/create$', views.LocationCreate.as_view(), name='location-create'),
