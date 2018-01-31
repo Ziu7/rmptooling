@@ -79,8 +79,9 @@ $(function() {
 							
 							<!-- If logged in as tool administrator options -->
 							{% if perms.catalog.can_mark_returned %}
-								<li><a href = "{% url 'loaned-tools' %}">Manage loaned tools</a></li>
+								<li><a href = "{% url 'borrowed-tools' %}">Manage borrowed tools</a></li>
 							{% endif %}
+							<li><a href="{% url 'borrowlog' %}">Borrow Log</a></li>
 						
 							<!-- Login/logout authenticated options -->
 							<li><a href="{% url 'logout'%}?next{{request.path}}">Logout</a></li>

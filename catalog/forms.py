@@ -5,22 +5,9 @@ import datetime #for checking renewal date range
 from .models import Discipline, Location, Tool, ToolSN
 
 # Renew tool form
-class RenewToolForm (forms.Form):
-	expiry_date = forms.DateField(help_text="Enter date between now and 4 weeks.")
-
-	def clean_expiry_date(self):
-		data = self.cleaned_data['expiry_date']
-
-		#check date is not in the past.
-		if data < datetime.date.today():
-			raise ValidationError(_('Invalid date - date is in the past'))
-
-		#check date is in range of renewal (4 weeks max)
-		if data > datetime.date.today() + datetime.timedelta(weeks=4):
-			raise ValidationError(_('Invalid date - cannot extend beyond 4 weeks'))
-
-		# remember to always return the cleaned data
-		return data
+class BorrowToolForm (forms.Form):
+	reason = forms.CharField(widget=forms.Textarea,help_text="Reason for the borrow")
+	notes = forms.CharField(widget=forms.Textarea,help_text="Any notes regarding the borrow", required=False)
 
 # New location Form
 class NewLocationForm(forms.ModelForm):

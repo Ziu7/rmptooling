@@ -11,6 +11,8 @@ urlpatterns = [
 	url(r'^location/$', views.LocationView.as_view(), name='location'),
 	url(r'^vaultlog/$', views.VaultLogList.as_view(), name='vaultlog'),
 
+
+
 	#Tool detailed view, including ToolSN instances
 	url(r'^tool/(?P<pk>\d+)$', views.ToolDetailView.as_view(), name='tool-detail'),
 
@@ -21,9 +23,10 @@ urlpatterns = [
 	url(r'^toolsn/(?P<pk>[-\w]+)$', views.ToolSNDetailView.as_view(), name='toolsn-detail'),
 
 	#Loaned tools views
-	url(r'^mytools/$', views.LoanedToolsByUserListView.as_view(), name='my-tools'),
-	url(r'^loanedtools/$', views.LoanedToolsByAllListView.as_view(), name='loaned-tools'),
-	url(r'^tool/(?P<pk>[-\w]+)/renew/$', views.renew_tool, name='renew-tool'), #function based view
+	url(r'^borrowlog/$', views.BorrowLogList.as_view(), name='borrowlog'),
+	url(r'^mytools/$', views.BorrowedToolsByUserListView.as_view(), name='my-tools'),
+	url(r'^borrowedtools/$', views.BorrowedToolsByAllListView.as_view(), name='borrowed-tools'),
+	url(r'^tool/(?P<pk>[-\w]+)/borrow/$', views.borrow_tool, name='borrow-tool'), #function based view
 
 	#ToolSN forms (Create, Update, Delete)
 	url(r'^toolsn/(?P<pk>\d+)/create$', views.ToolSNCreate.as_view(), name='toolsn-create'),

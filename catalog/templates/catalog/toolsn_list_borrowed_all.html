@@ -2,31 +2,30 @@
 {% block content %}
 	<h1>Borrowed Tools as of {% now "F d, o" %}</h1>
 
-	{% if vaultlog_list %}
+	{% if borrowlog_list %}
 	<table class="table table-striped table-hover table-responsive">
 		<thead>
 			<tr>
 				<th>Tool</th>
 				<th>Borrow Date</th>
-				<th>Return Date</th>
 				<th>Borrower</th>
-				{% if perms.catalog.can_mark_returned %}
-				<th>Renewal</th>
-				{% endif %}
+				<th>Reason</th>
+				<th>Notes</th>
+				<th>Approved By</th>
+				<th>Returned?</th>
 			</tr>
 		</thead>
 		
 		<tbody>
-		{% for log in vaultlog_list %}
+		{% for log in borrowlog_list %}
 			<tr {% if log.is_overdue %} class="table-danger" {% endif %} >
 				<td><a href="{% url 'toolsn-detail' log.toolsn_id %}">{{ log.toolsn }}</a></td>
 				<td>{{ log.borrowdate }}</td>
-				<td>{{ log.returndate }}</td>
 				<td>{{ log.borrower }}</td>
-				<!-- Renew option -->
-				{% if perms.catalog.can_mark_returned %} 
-				<td><a href="{% url 'renew-tool' log.toolsn_id %}">Renew</a></td> 
-				{% endif %}
+				<td>{{ log.reason }}</td>
+				<td>{{ log.notes }}</td>
+				<td>{{ log.approvedby }}</td>
+				<td>{{ log.isreturned }}</td>
 			</tr>
 		{% endfor %}
 	</tbody>

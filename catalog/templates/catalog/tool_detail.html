@@ -21,7 +21,7 @@
 			<h3>Quantities</h3>
 			<div><strong>Total:</strong> {{ tool.toolcount }}</div>
 			<div><strong>Working Order:</strong> {{ tool.workingcount }}</div>
-			<div><strong>Need PM Done:</strong> {{ tool.pmneeded }}</div>
+			<div><strong>Need PM Done:</strong> {{ tool.pmcount }}</div>
 		</div>
 	</div>
 	<div class="row">
@@ -36,7 +36,8 @@
 					<th>Needs Repair?</th>
 					<th>Pm Done?</th>
 					<th>Last Checked</th>
-					<th>Is Checked Out</th>
+					<th>Is Borrowed</th>
+					<th>Is In Vault</th>
 					<th>Comments</th>
 				</thead>
 				<tbody>
@@ -47,6 +48,7 @@
 							<td>{{ toolsn.pm }}</td>
 							<td>{{ toolsn.checkdate }}</td>
 							<td>{{ toolsn.is_checkedout }}</td>
+							<td>{{ toolsn.is_invault }}</td>
 							<td>{{ toolsn.comments }}</td>
 						</tr>
 					{% endfor %}

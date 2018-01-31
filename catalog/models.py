@@ -20,28 +20,26 @@ class Location(models.Model):
 	name = models.CharField(unique=True, max_length=200, help_text="Enter tool location.",verbose_name="location Name")
 	address = models.CharField(max_length=200, verbose_name="street address", default="N/A")
 	notes = models.TextField(max_length=1000, help_text="Any comments that would help find this location.", blank="True")
-
+	#Order by names
 	class Meta:
-		ordering = ["id"]
+		ordering = ["name"]
 		permissions = (("can_add_location", "Can add location"),)
+		verbose_name = _("Tool Locations")
 	def __str__(self):
 		return self.name
 
 # MODEL General information for tool by tool number
 class Tool(models.Model):
-	num = models.CharField(unique=True, max_length=100, verbose_name="Tool No.")
+	num = models.CharField(unique=True, max_length=100, verbose_name="tool no.")
 	name = models.CharField(max_length=200, verbose_name="tool name")
 	minneeded = models.IntegerField(verbose_name="minimum tools requiried" , default = "0")
 	draw = models.CharField(max_length=200,blank=True, verbose_name="tool drawing(s)")
 	dcatid = models.CharField (max_length=100, blank = True, verbose_name="DNGS CatID")
 	pcatid = models.CharField (max_length=100, blank = True, verbose_name="PNGS CatID")
-	primdisc = models.ForeignKey(Discipline, on_delete=models.SET_NULL, 
-	verbose_name="primary discipline", related_name="primdic_tool", null=True)
-	secdisc = models.ForeignKey(Discipline, on_delete=models.SET_NULL, 
-	verbose_name="secondary discipline", related_name="secdisc_tool", blank=True, null=True)
+	primdisc = models.ForeignKey(Discipline, on_delete=models.SET_NULL, verbose_name = "primary discipline", related_name="primdic_tool", null=True)
+	secdisc = models.ForeignKey(Discipline, on_delete=models.SET_NULL, verbose_name = "secondary discipline", related_name="secdisc_tool", blank=True, null=True)
 	notes = models.TextField(max_length=1000, help_text="Enter any notes for this tool as necessary.",blank=True)
 	#toolpic = models.ImageField (blank=True, null=True) If tool pics are available on intranet using toolID/num won't need this
-
 	class Meta:
 		ordering = ["id", "num"]
 		verbose_name = _("Tool")
@@ -54,7 +52,7 @@ class Tool(models.Model):
 	#returns the url to access a particular tool instance
 	def get_absolute_url(self):
 		return reverse('tool-detail', args=[str(self.id)]) #Maybe use tool name instead of ID in urls?
-
+	#Properties determined by the toolSNs 
 	@property
 	def toolcount(self):
 		return self.toolsn_set.count()
@@ -65,13 +63,11 @@ class Tool(models.Model):
 	def workingcount(self):
 		return self.toolsn_set.filter(repair='0').count()
 	@property
-	def pmneeded(self):
+	def pmcount(self):
 		return self.toolsn_set.filter(pm='0').count()
 	@property
 	def sufficienttools(self):
 		return ( self.toolcount - self.damagedcount ) > self.minneeded
-
-#Look into custom managers
 
 #MODEL tool instance by SN (for each specific tool)
 
@@ -84,9 +80,14 @@ class ToolSN (models.Model):
 	repair = models.BooleanField(max_length=5, help_text="Does this tool need to be repaired?")
 	checkdate = models.DateTimeField(verbose_name="time when tool was checked", null="True")
 	comments = 	models.TextField(max_length=1000, help_text="Enter any comments for this tool as necessary.",blank=True)
-	#check overdue tool
 	@property
-	def is_checkedout(self):
+	def is_invault(self):
+		if self.vaultlog_set.latest().action == "In":
+			return True
+		else:
+			return False
+	@property
+	def is_borrowed(self):
 		#Check if the most recent vaultlog hasn't been returned yet
 		try:
 			return not self.vaultlog_set.latest().isreturned
@@ -101,8 +102,8 @@ class ToolSN (models.Model):
 			return "None"
 
 	def mostRecentBorrow(self):
-		#Return the most recent vault log
-		return self.vaultlog_set.filter(isreturned=0).latest()
+		#Return the most recent borrow log
+		return self.borrowlog_set.filter(isreturned=0).latest()
 
 	class Meta:
 		ordering = ["tool","sn"] #order by tool number when returned in a query
@@ -113,19 +114,31 @@ class ToolSN (models.Model):
 		return "%s SN-%s" % (self.tool, self.sn) if self.sn is not '-' else "%s" % self.tool
 
 class VaultLog(models.Model):
+	vault_choices = (
+		('in','In'),
+		('out','Out')
+	)
+	toolsn = models.ForeignKey(ToolSN, on_delete=models.DO_NOTHING, verbose_name="loaned tool")
+	action = models.CharField(verbose_name="action on the tool", choices=vault_choices, default='out', max_length=3)
+	time = models.DateTimeField(verbose_name="log of when action was done", auto_now = True)
+	class Meta:
+		ordering = ('-time','id')
+		verbose_name = ('Tool Vault Log')
+		get_latest_by = ('time','id')
+
+
+class BorrowLog(models.Model):
 	toolsn = models.ForeignKey(ToolSN, on_delete=models.DO_NOTHING, verbose_name="loaned tool")
 	borrower = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="tool loaned to", related_name="borrower_log")
-	approvedby = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="who approved the borrow", related_name="manager_log")
-	borrowdate = models.DateField(verbose_name="time tool was checked out")
-	returndate = models.DateField(verbose_name="time tool must be returned")
-	isreturned = models.BooleanField(verbose_name="has tool been returned", default='0')
-	notes = models.TextField(verbose_name="Logging Notes", null=True, blank=True)
+	approvedby = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="who approved the borrow", related_name="manager_log", blank=True, null=True)
+	borrowdate = models.DateField(verbose_name="time tool was checked out", auto_now_add=True)
+	reason = models.TextField(verbose_name="why was tool taken out", null=True, blank=True)
+	isreturned = models.BooleanField(verbose_name="is the tool returned?", default='0')
+	notes = models.TextField(verbose_name="logging Notes", null=True, blank=True)
 	time = models.DateTimeField(verbose_name="log of when action was done", auto_now = True)
-	@property
-	def is_overdue(self):
-		return date.today() > self.returndate
 
 	class Meta:
+		ordering = ('-time','id')
 		verbose_name = ('Tool Vault Log')
 		get_latest_by = ('borrowdate','id')
 

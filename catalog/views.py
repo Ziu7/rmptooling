@@ -12,8 +12,8 @@ from django.contrib.auth.mixins import PermissionRequiredMixin #permission requi
 from django.contrib.auth.models import User #for use with methods associated with users
 from django.db import models
 from django import forms #form class for creating user input forms
-from .models import Discipline, Location, Tool, ToolSN, VaultLog
-from .forms import VaultUpdateInForm, VaultUpdateOutForm, RenewToolForm, NewLocationForm
+from .models import Discipline, Location, Tool, ToolSN, VaultLog, BorrowLog
+from .forms import VaultUpdateInForm, VaultUpdateOutForm, BorrowToolForm, NewLocationForm
 
 #View for index (regular function)
 @login_required
@@ -67,19 +67,19 @@ class ToolSNDetailView(LoginRequiredMixin, generic.DetailView):
 	model = ToolSN
 
 #View for tools on loan by User
-class LoanedToolsByUserListView(LoginRequiredMixin, generic.ListView):
+class BorrowedToolsByUserListView(LoginRequiredMixin, generic.ListView):
 	model = VaultLog
 	template_name ='catalog/toolsn_list_borrowed_user.html'
 	def get_queryset(self):
-		return VaultLog.objects.filter(isreturned = False, borrower=self.request.user).select_related()
+		return BorrowLog.objects.filter(isreturned = False, borrower=self.request.user).select_related()
 
 #View for tools on loan by all users
-class LoanedToolsByAllListView(PermissionRequiredMixin, generic.ListView):
+class BorrowedToolsByAllListView(PermissionRequiredMixin, generic.ListView):
 	permission_required = 'catalog.can_mark_returned'
 	model = VaultLog
 	template_name ='catalog/toolsn_list_borrowed_all.html'
 	def get_queryset(self):
-		return VaultLog.objects.filter(isreturned = False).select_related()
+		return BorrowLog.objects.filter(isreturned = False).select_related()
 
 #Vault Log View
 class VaultLogList(LoginRequiredMixin, generic.ListView):
@@ -87,32 +87,31 @@ class VaultLogList(LoginRequiredMixin, generic.ListView):
 	#We want to get all of the vault log data and pre-grab any related data
 	def get_queryset(self):
 		return VaultLog.objects.select_related()
-	
+
+#Borrow Log View
+class BorrowLogList(LoginRequiredMixin, generic.ListView):
+	model = BorrowLog
+	def get_queryset(self):
+		return BorrowLog.objects.select_related()
+
 ####################################### Renew Tool Form
 
 @permission_required('catalog.can_mark_returned') #can_mark_returned permission required to renew
-def renew_tool(request,pk):
+def borrow_tool(request,pk):
 	tool_sn=get_object_or_404(ToolSN, pk=pk)
-	tool_log = tool_sn.mostRecentBorrow()
 	if request.method == 'POST':
 		#create a form instance and populate it with data from the request
-		form = RenewToolForm(request.POST)
+		form = BorrowToolForm(request.POST)
 		#check if the form is valid:
 		if form.is_valid():
-			newLog = VaultLog(toolsn=tool_sn, borrower=tool_log.borrower, approvedby = request.user, borrowdate = date.today(), returndate = form.cleaned_data['expiry_date'])
-			newLog.save()
-			tool_log.isreturned = True
-			tool_log.notes = "Return date extended" 
-			#Add to notes everytime something is renewed, or kill the previous entry and add a new one. Adding to notes what happened.
-			tool_log.save()
-			tool_sn.save()
+			log = BorrowLog(toolsn = tool_sn, borrower = request.user, borrowdate = date.today(), 
+			reason=request.POST.get('reason'), notes=request.POST.get('notes'))
+			log.save()
 			#redirect to a new URL:
-			return HttpResponseRedirect(reverse('loaned-tools'))
-	else:
-		default_renew_date = date.today() + timedelta(weeks=3) # default renew date + 3weeks
-		form = RenewToolForm(initial={'expiry_date':default_renew_date,})
-
-	return render(request, 'catalog/tool_renew.html', {'form':form, 'toolsn':tool_sn, 'log':tool_log })
+			return HttpResponseRedirect(reverse('borrowed-tools'))
+	
+	form = BorrowToolForm()
+	return render(request, 'catalog/tool_borrow.html', {'form':form, 'toolsn':tool_sn})
 
 #############################FORMS: Class Based#############################
 

@@ -1,26 +1,32 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-	<h1>Vault Log</h1>
+	<h1>Borrow Log</h1>
 
-	{% if vaultlog_list %}
+	{% if borrowlog_list %}
 	<table id="vaultlog_list" class="table table-striped table-hover table-responsive">
 		<thead class="thead-light">
 			<tr>
-				<th>Barcade</th>
 				<th>Tool Number</th>
-				<th>Action</th>
-				<th>Time</th>
+				<th>Borrowed By</th>
+				<th>Approved By</th>
+				<th>Borrow Date</th>
+				<th>Return Date</th>
+				<th>Returned?</th>
+				<th>Action Done on</th>
 			</tr>
 		</thead>
 
 		<tbody>
-			{% for log in vaultlog_list %}
-				<tr>
-					<th scope="row">{{log.toolsn_id}}</th>
+			{% for log in borrowlog_list %}
+				<tr {% if log.is_overdue %} class="table-warning" {% endif %} >
 					<td><a href="{% url 'toolsn-detail' log.toolsn_id %}">{{ log.toolsn }}</a></td>
-					<td>{{ log.action }}</td>
-					<td>{{ log.time }}</td>
+						<td>{{ log.borrower }}</td>
+						<td>{{ log.approvedby }}</td>
+						<td>{{ log.borrowdate }}</td>
+						<td>{{ log.returndate }}</td>
+						<td>{{ log.isreturned }}</td>
+						<td>{{ log.time }}</td>
 				</tr>
 			{% endfor %}
 		</tbody>
