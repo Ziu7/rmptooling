@@ -1,35 +1,57 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-	<h1>{{ tool.num }}</h1>
-	<h2>{{ tool.name }}</h2>
+	<h1>{{ tool }}</h1>
 
-	<strong>Primary Discipline:</strong> {{ tool.primdisc }}
-	<br>
-	<strong>Secondary Discipline:</strong> {{ tool.secdisc }}
-	<br>
-	<strong>DNGS CatID:</strong> {{ tool.dcatid }}
-	<br>
-	<strong>PNGS CatID:</strong> {{ tool.pcatid }}
-	<br>
-	<strong>Drawings:</strong> {{ tool.draw }}
-	<br>
-	<strong>Tool Notes:</strong> {{ tool.notes }}
-	<br><br>
-	
-		Quantity: {{ tool.toolsn_set.count }}
-		<br><br>
-		<a href="{% url 'toolsn-create' tool.id %}"> Add new SN </a>
-
-		<table width= "500px">
-			{% for toolsn in tool.toolsn_set.all %}
-				<tr><th><a href="{% url 'toolsn-detail' toolsn.id %}">{{ toolsn }}</a></th></tr>
-				<tr><th width="150px">Location:</th><td>{{ toolsn.location }}</td></tr>
-				<tr><th>PM Complete?:</th><td>{{ toolsn.pm }}</td></tr>
-				<tr><th>Needs Repair?:</th><td>{{ toolsn.repair }}</td></tr>
-				<tr><th>Last Checked:</th><td>{{ toolsn.checkdate }}</td></tr>
-				<tr><th>Comments:</th><td>{{ toolsn.comments }}</td></tr>				
-			{% endfor %}
-		</table>	
-		<hr>	
+	<div class="row">
+		<div class="col-md-6" >
+			<strong>Primary Discipline:</strong> {{ tool.primdisc }}
+			<br>
+			<strong>Secondary Discipline:</strong> {{ tool.secdisc }}
+			<br>
+			<strong>DNGS CatID:</strong> {{ tool.dcatid }}
+			<br>
+			<strong>PNGS CatID:</strong> {{ tool.pcatid }}
+			<br>
+			<strong>Drawings:</strong> {{ tool.draw }}
+			<br>
+			<strong>Tool Notes:</strong> {{ tool.notes }}
+		</div>
+		<div class="col-md-6">
+			<h3>Quantities</h3>
+			<div><strong>Total:</strong> {{ tool.toolcount }}</div>
+			<div><strong>Working Order:</strong> {{ tool.workingcount }}</div>
+			<div><strong>Need PM Done:</strong> {{ tool.pmneeded }}</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<a href="{% url 'toolsn-create' tool.id %}"> Add new SN </a>
+		</div>
+		<div class="col-md-12">
+			<table class="table table-striped table-hover table-bordered">
+				<thead class="thead-light">
+					<th>Tool SN</th>
+					<th>Tool Location</th>
+					<th>Needs Repair?</th>
+					<th>Pm Done?</th>
+					<th>Last Checked</th>
+					<th>Is Checked Out</th>
+					<th>Comments</th>
+				</thead>
+				<tbody>
+					{% for toolsn in tool.toolsn_set.all %}
+						<tr class="{% if not toolsn.pm %}table-warning{% endif %} {% if toolsn.repair%}table-danger{% endif %}" >							<th scope="row"><a href="{% url 'toolsn-detail' toolsn.id %}">{{ toolsn }}</a></th>
+							<td>{{ toolsn.location }}</td>
+							<td>{{ toolsn.repair }}</td>
+							<td>{{ toolsn.pm }}</td>
+							<td>{{ toolsn.checkdate }}</td>
+							<td>{{ toolsn.is_checkedout }}</td>
+							<td>{{ toolsn.comments }}</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
 {% endblock %}

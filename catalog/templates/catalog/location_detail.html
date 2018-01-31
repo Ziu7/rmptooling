@@ -15,8 +15,8 @@
 		</thead>
 		<tbody>
 			{% for toolsn in location.toolsn_set.all %}
-				<tr class="{% if toolsn.pm != 'Yes'%}warning{% endif %} {% if toolsn.repair == 'Yes'%}danger{% endif %}" >
-					<td><a href="{% url 'toolsn-detail' toolsn.id %}">{{ toolsn }}</a></td>
+			<tr class="{% if not toolsn.pm %}table-warning{% endif %} {% if toolsn.repair%}table-danger{% endif %}" >							
+				<th scope="row"><a href="{% url 'toolsn-detail' toolsn.id %}">{{ toolsn }}</a></th>
 					<td>{{ toolsn.repair }}</td>
 					<td>{{ toolsn.pm }}</td>
 					<td>{{ toolsn.tool.primdisc }}</td>

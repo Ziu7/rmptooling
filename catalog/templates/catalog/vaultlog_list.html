@@ -5,28 +5,28 @@
 
 	{% if vaultlog_list %}
 	<table id="vaultlog_list" class="table table-striped table-hover table-responsive">
-		<thead>
+		<thead class="thead-light">
 			<tr>
-				<th>Barcode ID</th>
 				<th>Tool Number</th>
 				<th>Borrowed By</th>
 				<th>Approved By</th>
-				<th>Vault Out Time</th>
-				<th>Is it returned?</th>
+				<th>Borrow Date</th>
+				<th>Return Date</th>
+				<th>Returned?</th>
+				<th>Action Done on</th>
 			</tr>
 		</thead>
 
 		<tbody>
 			{% for log in vaultlog_list %}
 				<tr {% if log.is_overdue %} class="table-warning" {% endif %} >
-					<td>{{ log.toolsn_id }}</td>
 					<td><a href="{% url 'toolsn-detail' log.toolsn_id %}">{{ log.toolsn }}</a></td>
-						<td><a href="{% url 'vault-update-out' log.toolsn_id %}"></a></td>
-						<td><a href="{% url 'vault-update-in' log.toolsn_id %}"></a></td>
 						<td>{{ log.borrower }}</td>
 						<td>{{ log.approvedby }}</td>
 						<td>{{ log.borrowdate }}</td>
-						<td>{{ log.returned }}</td>
+						<td>{{ log.returndate }}</td>
+						<td>{{ log.isreturned }}</td>
+						<td>{{ log.time }}</td>
 				</tr>
 			{% endfor %}
 		</tbody>
@@ -40,10 +40,13 @@
 <!-- table filter js -->
 	<script language="javascript" type="text/javascript">
 		var props02 = {
-			col_2:'select',
+			col_1:'none',
+			col_2:'none',
 			col_3:'none',
 			col_4:'none',
 			col_5:'none',
+			col_6:'none',
+			col_7:'none',
 			};
 
 		var tf03 = new TableFilter("vaultlog_list",props02);

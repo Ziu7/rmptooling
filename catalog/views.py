@@ -120,7 +120,7 @@ def renew_tool(request,pk):
 class ToolSNCreate(LoginRequiredMixin, CreateView):
 	model = ToolSN
 	fields = ['tool','sn','location','pm','repair','checkdate','comments']
-	initial={'checkdate':date.today(),'tool': "Bolts"}
+	initial={'checkdate':datetime.today(),'tool': "Bolts"}
 
 	def get_success_url(self):
 		return reverse('tool-detail', kwargs={'pk': self.kwargs['pk']})
@@ -128,7 +128,7 @@ class ToolSNCreate(LoginRequiredMixin, CreateView):
 class ToolSNUpdate(LoginRequiredMixin, UpdateView):
 	model = ToolSN
 	fields = ['sn','location','pm','repair','checkdate','comments']
-	initial={'checkdate':date.today()}
+	initial={'checkdate':datetime.today()}
 
 	def get_success_url(self):
 		return reverse('toolsn-detail', kwargs={'pk': self.kwargs['pk']})
@@ -140,7 +140,7 @@ class ToolSNUpdate(LoginRequiredMixin, UpdateView):
 		return HttpResponseRedirect(self.get_success_url())
 
 class ToolSNDelete(LoginRequiredMixin, DeleteView):
-	model =ToolSN
+	model = ToolSN
 	success_url = reverse_lazy('tool')
 
 # Class based forms for MODEL: Tool

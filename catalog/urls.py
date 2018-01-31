@@ -5,9 +5,9 @@ urlpatterns = [
 	#Standard List Views
 	url(r'^$', views.index, name='index'), #function based view
 	url(r'^tool/$' , views.ToolListView.as_view(), name='tool'),
-	url(r'^toolsn/$' , views.ToolSNView.as_view(), name='toolsn'),
-	url(r'^toolsn/repair$' , views.ToolSNRepairView.as_view(), name='toolsnrepair'),
-	url(r'^toolsn/pm$' , views.ToolSNPMView.as_view(), name='toolsnpm'),
+	url(r'^inventory/$' , views.ToolSNView.as_view(), name='toolsn'),
+	url(r'^inventory/repair$' , views.ToolSNRepairView.as_view(), name='toolsnrepair'),
+	url(r'^inventory/pm$' , views.ToolSNPMView.as_view(), name='toolsnpm'),
 	url(r'^location/$', views.LocationView.as_view(), name='location'),
 	url(r'^vaultlog/$', views.VaultLogList.as_view(), name='vaultlog'),
 

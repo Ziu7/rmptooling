@@ -55,14 +55,21 @@ class Tool(models.Model):
 	def get_absolute_url(self):
 		return reverse('tool-detail', args=[str(self.id)]) #Maybe use tool name instead of ID in urls?
 
-	def get_toolcount(self):
+	@property
+	def toolcount(self):
 		return self.toolsn_set.count()
-
-	def get_damagedtoolcount(self):
-		return self.toolsn_set.filter(repair='True').count()
-
+	@property
+	def damagedcount(self):
+		return self.toolsn_set.filter(repair='1').count()
+	@property
+	def workingcount(self):
+		return self.toolsn_set.filter(repair='0').count()
+	@property
+	def pmneeded(self):
+		return self.toolsn_set.filter(pm='0').count()
+	@property
 	def sufficienttools(self):
-		return ( self.get_toolcount() - self.get_damagedtoolcount() ) > self.minneeded
+		return ( self.toolcount - self.damagedcount ) > self.minneeded
 
 #Look into custom managers
 
@@ -81,7 +88,17 @@ class ToolSN (models.Model):
 	@property
 	def is_checkedout(self):
 		#Check if the most recent vaultlog hasn't been returned yet
-		return not self.vaultlog_set.latest().isreturned
+		try:
+			return not self.vaultlog_set.latest().isreturned
+		except:
+			return False
+	@property
+	def borrower(self):
+		try:
+			q = self.mostRecentBorrow()
+			return q.borrower.username
+		except:
+			return "None"
 
 	def mostRecentBorrow(self):
 		#Return the most recent vault log
@@ -103,13 +120,14 @@ class VaultLog(models.Model):
 	returndate = models.DateField(verbose_name="time tool must be returned")
 	isreturned = models.BooleanField(verbose_name="has tool been returned", default='0')
 	notes = models.TextField(verbose_name="Logging Notes", null=True, blank=True)
+	time = models.DateTimeField(verbose_name="log of when action was done", auto_now = True)
 	@property
 	def is_overdue(self):
 		return date.today() > self.returndate
 
 	class Meta:
 		verbose_name = ('Tool Vault Log')
-		get_latest_by = ('borrowdate')
+		get_latest_by = ('borrowdate','id')
 
 #Creatable tasks that can show what tools to take on what jobs, what disciplines they fall under, etc.
 class Job(models.Model):
