@@ -5,11 +5,10 @@
 	<div class="row">
 		<div class="col-md-6"><a href='{% url 'tool-detail' toolsn.tool.id %}'>See all SNs for {{toolsn.tool.num}}</a></div>
 	</div>
-	<div class="row" style="padding:5px">
-		<div class="col-md-2"><a href="{% url 'toolsn-update' toolsn.id %}"> Update </a></div>
-		<div class="col-md-2"><a href="{% url 'toolsn-delete' toolsn.id %}"> Delete </a></div>
-		<div class="col-md-2"><a href="{% url 'toolsn-delete' toolsn.id %}"> Change Vault Status </a></div>
-		<div class="col-md-2"><a href="{% url 'borrow-tool' toolsn.id %}"> Borrow Tool </a></div>
+	<div class="btn-group">
+		<a href="{% url 'toolsn-update' toolsn.id %}" class="btn btn-primary"> Update </a>
+		<a href="{% url 'borrow-tool' toolsn.id %}" class="btn btn-warning"> Borrow </a>
+		<a href="{% url 'toolsn-delete' toolsn.id %}" class="btn btn-danger"> Delete </a>
 	</div>
 	<table width= "500px">
 		<tr><th width="150px">Location:</th><td>{{ toolsn.location }}</td></tr>

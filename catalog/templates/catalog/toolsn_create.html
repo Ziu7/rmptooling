@@ -1,0 +1,15 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+	<h1>Create a new  {{ tool }}</h1>
+	<br>
+		<form action="" method="post">
+			{% csrf_token %}
+
+			<table>
+				{{ form }}
+			</table>
+			<input type="submit" value="Submit" />
+		</form>
+
+{% endblock %} 

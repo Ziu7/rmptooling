@@ -32,7 +32,7 @@ class Location(models.Model):
 class Tool(models.Model):
 	num = models.CharField(unique=True, max_length=100, verbose_name="tool no.")
 	name = models.CharField(max_length=200, verbose_name="tool name")
-	minneeded = models.IntegerField(verbose_name="minimum tools requiried" , default = "0")
+	minneeded = models.IntegerField(verbose_name="minimum tools requiried" , default = "3")
 	draw = models.CharField(max_length=200,blank=True, verbose_name="tool drawing(s)")
 	dcatid = models.CharField (max_length=100, blank = True, verbose_name="DNGS CatID")
 	pcatid = models.CharField (max_length=100, blank = True, verbose_name="PNGS CatID")
@@ -70,7 +70,6 @@ class Tool(models.Model):
 		return ( self.toolcount - self.damagedcount ) > self.minneeded
 
 #MODEL tool instance by SN (for each specific tool)
-
 class ToolSN (models.Model):
 	id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text="Unique ID for tool")
 	tool = models.ForeignKey(Tool,on_delete=models.CASCADE, verbose_name="tool no.")
@@ -78,7 +77,7 @@ class ToolSN (models.Model):
 	location = models.ForeignKey(Location,on_delete=models.SET_NULL, verbose_name="location of the tool", null=True)
 	pm = models.BooleanField(max_length=50, help_text="Is PM complete for this tool?")
 	repair = models.BooleanField(max_length=5, help_text="Does this tool need to be repaired?")
-	checkdate = models.DateTimeField(verbose_name="time when tool was checked", null="True")
+	checkdate = models.DateTimeField(verbose_name="time when tool was checked", null="True", auto_now=True)
 	comments = 	models.TextField(max_length=1000, help_text="Enter any comments for this tool as necessary.",blank=True)
 	@property
 	def is_invault(self):

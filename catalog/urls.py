@@ -13,13 +13,9 @@ urlpatterns = [
 
 
 
-	#Tool detailed view, including ToolSN instances
+	#Detailed views
 	url(r'^tool/(?P<pk>\d+)$', views.ToolDetailView.as_view(), name='tool-detail'),
-
-	#Location detailed view, including ToolSN instances
 	url(r'^location/(?P<pk>\d+)$', views.LocationDetailView.as_view(), name='location-detail'),
-
-	#ToolSN detailed view
 	url(r'^toolsn/(?P<pk>[-\w]+)$', views.ToolSNDetailView.as_view(), name='toolsn-detail'),
 
 	#Loaned tools views
@@ -29,7 +25,7 @@ urlpatterns = [
 	url(r'^tool/(?P<pk>[-\w]+)/borrow/$', views.borrow_tool, name='borrow-tool'), #function based view
 
 	#ToolSN forms (Create, Update, Delete)
-	url(r'^toolsn/(?P<pk>\d+)/create$', views.ToolSNCreate.as_view(), name='toolsn-create'),
+	url(r'^toolsn/(?P<pk>\d+)/create$', views.create_toolsn, name='toolsn-create'),
 	url(r'^toolsn/(?P<pk>[-\w]+)/update$', views.ToolSNUpdate.as_view(), name='toolsn-update'),
 	url(r'^toolsn/(?P<pk>[-\w]+)/delete$', views.ToolSNDelete.as_view(), name='toolsn-delete'),
 
@@ -37,12 +33,9 @@ urlpatterns = [
 	url(r'^tool/create$', views.ToolCreate.as_view(), name='tool-create'),
 
 	#Tool Checkout Forms
-	url(r'^vaultlog/(?P<pk>[-\w]+)/(?P<action>[-\w]+)$', views.VaultUpdate.as_view(), name='vault-update'),
+	#url(r'^vaultlog/(?P<pk>[-\w]+)/(?P<action>[-\w]+)$', views.VaultUpdate.as_view(), name='vault-update'),
 
 	#Location forms (Create, Update)
 	url(r'^location/create$', views.LocationCreate.as_view(), name='location-create'),
-
-	url(r'^location/new$', views.add_location, name='add-location'),
-
 	url(r'^location/(?P<pk>\d+)/update$', views.LocationUpdate.as_view(), name='location-update'),
 ]

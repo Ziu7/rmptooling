@@ -13,7 +13,7 @@ from django.contrib.auth.models import User #for use with methods associated wit
 from django.db import models
 from django import forms #form class for creating user input forms
 from .models import Discipline, Location, Tool, ToolSN, VaultLog, BorrowLog
-from .forms import VaultUpdateInForm, VaultUpdateOutForm, BorrowToolForm, NewLocationForm
+from .forms import newToolSNForm, BorrowToolForm, NewLocationForm
 
 #View for index (regular function)
 @login_required
@@ -105,7 +105,7 @@ def borrow_tool(request,pk):
 		#check if the form is valid:
 		if form.is_valid():
 			log = BorrowLog(toolsn = tool_sn, borrower = request.user, borrowdate = date.today(), 
-			reason=request.POST.get('reason'), notes=request.POST.get('notes'))
+			reason=form.cleaned_data['reason'], notes=form.cleaned_data['notes'])
 			log.save()
 			#redirect to a new URL:
 			return HttpResponseRedirect(reverse('borrowed-tools'))
@@ -113,21 +113,26 @@ def borrow_tool(request,pk):
 	form = BorrowToolForm()
 	return render(request, 'catalog/tool_borrow.html', {'form':form, 'toolsn':tool_sn})
 
-#############################FORMS: Class Based#############################
-
 # Class based forms for MODEL: ToolSN
-class ToolSNCreate(LoginRequiredMixin, CreateView):
-	model = ToolSN
-	fields = ['tool','sn','location','pm','repair','checkdate','comments']
-	initial={'checkdate':datetime.today(),'tool': "Bolts"}
+def create_toolsn(request,pk):
+	tool = get_object_or_404(Tool, pk=pk)
+	if request.method == 'POST':
+		form = newToolSNForm(request.POST)
+		
+		if form.is_valid():
+			t = ToolSN(tool=tool, sn=form.cleaned_data['sn'], location=form.cleaned_data['location'], 
+			pm=form.cleaned_data['pm'], repair=form.cleaned_data['repair'], comments=form.cleaned_data['comments'])
+			t.save()
+			return HttpResponseRedirect(reverse('tool-detail', kwargs={'pk':pk}))
+	
+	form = newToolSNForm()
+	return render(request, 'catalog/toolsn_create.html', {'form':form, 'tool':tool})
 
-	def get_success_url(self):
-		return reverse('tool-detail', kwargs={'pk': self.kwargs['pk']})
+
 
 class ToolSNUpdate(LoginRequiredMixin, UpdateView):
 	model = ToolSN
-	fields = ['sn','location','pm','repair','checkdate','comments']
-	initial={'checkdate':datetime.today()}
+	fields = ['sn','location','pm','repair','comments']
 
 	def get_success_url(self):
 		return reverse('toolsn-detail', kwargs={'pk': self.kwargs['pk']})
@@ -159,26 +164,3 @@ class LocationUpdate(LoginRequiredMixin, UpdateView):
 	model = Location
 	fields = ['id','location']
 	success_url = reverse_lazy('location')
-
-#Tool Checkout
-class VaultUpdate(LoginRequiredMixin, UpdateView):
-	permission_required = 'catalog.can_log_vault'
-	template_name ='catalog/vaultlogout_form.html'	
-	model = ToolSN
-	form_class= VaultUpdateOutForm
-	initial={'vaultouttime': datetime.now(), 'vault':'Out'}	
-
-	success_url = reverse_lazy('vaultlogout')
-
-###########FUNCTION BASED LOCATION CREATE FORM###########
-def add_location(request):
-	loc=Location
-	if request.POST:
-		form = NewLocationForm(request.POST)
-		if form.is_valid():
-			form.save()
-			return HttpResponseRedirect(reverse('location'))
-	else:
-		form = NewLocationForm()#initial={'location':Location.objects.get(id=2)})
-
-	return render(request, 'catalog/location_form _function.html', {'form':form,'loc':loc})

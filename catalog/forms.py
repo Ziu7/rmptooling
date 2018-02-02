@@ -16,6 +16,12 @@ class NewLocationForm(forms.ModelForm):
 		model = Location
 		fields ='__all__'
 
+#New ToolSN Form
+class newToolSNForm(forms.ModelForm):
+	class Meta:
+		model = ToolSN
+		fields = ['sn','location','pm','repair','comments']
+
 # Vault Status Update Out Form - Readonly Fields
 class VaultUpdateOutForm(forms.ModelForm):
 	class Meta:
