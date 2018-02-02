@@ -54,6 +54,15 @@ class ToolSNPMView(LoginRequiredMixin, generic.ListView):
 	def get_queryset(self):
 		return ToolSN.objects.filter(pm='False')
 
+#Temporary view for all duplicates
+def duplicateTools(request):
+	duplicate_tools =  ToolSN.objects.raw('select *,count(*) as dupcount from `catalog_toolsn` group by `tool_id`,`sn` having count(*) > 1')
+	return render(
+		request,
+		'catalog/toolsn_dups.html',
+		context={'duplicate_tools':duplicate_tools},
+	)
+
 #View for detailed tool list for each SN (class based, detail view)
 class ToolDetailView(LoginRequiredMixin, generic.DetailView):
 	model = Tool

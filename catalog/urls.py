@@ -8,6 +8,7 @@ urlpatterns = [
 	url(r'^inventory/$' , views.ToolSNView.as_view(), name='toolsn'),
 	url(r'^inventory/repair$' , views.ToolSNRepairView.as_view(), name='toolsnrepair'),
 	url(r'^inventory/pm$' , views.ToolSNPMView.as_view(), name='toolsnpm'),
+	url(r'^inventory/dup$' , views.duplicateTools, name='toolsndup'),
 	url(r'^location/$', views.LocationView.as_view(), name='location'),
 	url(r'^vaultlog/$', views.VaultLogList.as_view(), name='vaultlog'),
 
