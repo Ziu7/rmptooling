@@ -1,7 +1,7 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-	<h1>Tool Inventory</h1>
+	<h1>Tool Inventory</h1> <b>Total number of tools in list:</b> {{ toolsn_list.count }}
 
 <!-- Barcode input form -->
 	<form id="formtoolsn">
@@ -25,11 +25,11 @@
 
 		<tbody>
 			{% for toolsn in toolsn_list %}
-				<tr class="{% if not toolsn.pm %}table-warning{% endif %} {% if toolsn.repair%}table-danger{% endif %}" >
+				<tr class="{% if not toolsn.pm and toolsn.needs_pm %}table-warning{% endif %} {% if toolsn.repair%}table-danger{% endif %}" >
 					<td><a href="{% url 'toolsn-detail' toolsn.id %}">{{ toolsn }}</a></td>
 					<td><a href="{% url 'location-detail' toolsn.location.id %}">{{ toolsn.location }}</a></td>
 					<td>{{ toolsn.repair }}</td>
-					<td>{{ toolsn.pm }}</td>
+					<td>{% if toolsn.needs_pm %} {{ toolsn.pm }} {% else %} N/A {% endif %}</td>
 					<td>{{ toolsn.tool.primdisc }}</td>
 					<td>{{ toolsn.tool.secdisc }}</td>
 				</tr>

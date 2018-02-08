@@ -30,14 +30,15 @@ class Location(models.Model):
 
 # MODEL General information for tool by tool number
 class Tool(models.Model):
-	num = models.CharField(unique=True, max_length=100, verbose_name="tool no.")
-	name = models.CharField(max_length=200, verbose_name="tool name")
+	num = models.CharField(unique=True, max_length=100, verbose_name="tool no.", default="-")
+	name = models.CharField(max_length=200, verbose_name="tool name", default="-")
 	minneeded = models.IntegerField(verbose_name="minimum tools requiried" , default = "3")
 	draw = models.CharField(max_length=200,blank=True, verbose_name="tool drawing(s)")
 	dcatid = models.CharField (max_length=100, blank = True, verbose_name="DNGS CatID")
 	pcatid = models.CharField (max_length=100, blank = True, verbose_name="PNGS CatID")
 	primdisc = models.ForeignKey(Discipline, on_delete=models.SET_NULL, verbose_name = "primary discipline", related_name="primdic_tool", null=True)
 	secdisc = models.ForeignKey(Discipline, on_delete=models.SET_NULL, verbose_name = "secondary discipline", related_name="secdisc_tool", blank=True, null=True)
+	pmneeded = models.BooleanField(help_text = "Will this tool have PM checks done?", default=False, verbose_name = "PM checks required")
 	notes = models.TextField(max_length=1000, help_text="Enter any notes for this tool as necessary.",blank=True)
 	#toolpic = models.ImageField (blank=True, null=True) If tool pics are available on intranet using toolID/num won't need this
 	class Meta:
@@ -75,8 +76,8 @@ class ToolSN (models.Model):
 	tool = models.ForeignKey(Tool,on_delete=models.CASCADE, verbose_name="tool no.")
 	sn = models.CharField(max_length=10, verbose_name="tool SN")
 	location = models.ForeignKey(Location,on_delete=models.SET_NULL, verbose_name="location of the tool", null=True)
-	pm = models.BooleanField(max_length=50, help_text="Is PM complete for this tool?")
-	repair = models.BooleanField(max_length=5, help_text="Does this tool need to be repaired?")
+	pm = models.NullBooleanField(help_text="Is PM complete for this tool?", null=True)
+	repair = models.BooleanField(help_text="Does this tool need to be repaired?", default=False)
 	checkdate = models.DateTimeField(verbose_name="time when tool was checked", null="True", auto_now=True)
 	comments = 	models.TextField(max_length=1000, help_text="Enter any comments for this tool as necessary.",blank=True)
 	@property
@@ -99,6 +100,9 @@ class ToolSN (models.Model):
 			return q.borrower.username
 		except:
 			return "None"
+	@property
+	def needs_pm(self):
+		return self.tool.pmneeded
 
 	def mostRecentBorrow(self):
 		#Return the most recent borrow log

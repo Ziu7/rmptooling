@@ -18,9 +18,16 @@ class NewLocationForm(forms.ModelForm):
 
 #New ToolSN Form
 class newToolSNForm(forms.ModelForm):
+	def __init__(self,*args,**kwargs):
+		pm_needed = kwargs.pop('pm_needed', False) #False is the default if nothing is called
+		super(newToolSNForm, self).__init__(*args, **kwargs)
+		if not pm_needed:
+			self.fields.pop('pm')
+
 	class Meta:
 		model = ToolSN
 		fields = ['sn','location','pm','repair','comments']
+	pm = forms.CharField(widget=forms.CheckboxInput, help_text="Is the PM check done for this tool?")
 
 # Vault Status Update Out Form - Readonly Fields
 class VaultUpdateOutForm(forms.ModelForm):

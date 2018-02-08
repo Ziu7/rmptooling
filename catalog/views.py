@@ -52,7 +52,7 @@ class ToolSNRepairView(LoginRequiredMixin, generic.ListView):
 class ToolSNPMView(LoginRequiredMixin, generic.ListView):
 	model = ToolSN
 	def get_queryset(self):
-		return ToolSN.objects.filter(pm='False')
+		return ToolSN.objects.filter(tool__pmneeded=1,pm=0)
 
 #Temporary view for all duplicates
 def duplicateTools(request):
@@ -126,15 +126,14 @@ def borrow_tool(request,pk):
 def create_toolsn(request,pk):
 	tool = get_object_or_404(Tool, pk=pk)
 	if request.method == 'POST':
-		form = newToolSNForm(request.POST)
-		
+		form = newToolSNForm(request.POST,pm_needed=tool.pmneeded)
 		if form.is_valid():
 			t = ToolSN(tool=tool, sn=form.cleaned_data['sn'], location=form.cleaned_data['location'], 
 			pm=form.cleaned_data['pm'], repair=form.cleaned_data['repair'], comments=form.cleaned_data['comments'])
 			t.save()
 			return HttpResponseRedirect(reverse('tool-detail', kwargs={'pk':pk}))
 	
-	form = newToolSNForm()
+	form = newToolSNForm(pm_needed=tool.pmneeded) #Edit this to disable PM if it's not needed for this tool
 	return render(request, 'catalog/toolsn_create.html', {'form':form, 'tool':tool})
 
 

@@ -16,6 +16,8 @@
 			<strong>Drawings:</strong> {{ tool.draw }}
 			<br>
 			<strong>Tool Notes:</strong> {{ tool.notes }}
+			<br>
+			<strong>PM Needed?:</strong> {{ tool.pmneeded }}
 		</div>
 		<div class="col-md-6">
 			<h3>Quantities</h3>
@@ -37,7 +39,7 @@
 					<th>Tool SN</th>
 					<th>Tool Location</th>
 					<th>Needs Repair?</th>
-					<th>Pm Done?</th>
+					{% if tool.pmneeded %} <th>Pm Done?</th> {% endif %}
 					<th>Last Checked</th>
 					<th>Is Borrowed</th>
 					<th>Is In Vault</th>
@@ -48,7 +50,7 @@
 						<tr class="{% if not toolsn.pm %}table-warning{% endif %} {% if toolsn.repair%}table-danger{% endif %}" >							<th scope="row"><a href="{% url 'toolsn-detail' toolsn.id %}">{{ toolsn }}</a></th>
 							<td>{{ toolsn.location }}</td>
 							<td>{{ toolsn.repair }}</td>
-							<td>{{ toolsn.pm }}</td>
+							{% if tool.pmneeded %} <td>{{ toolsn.pm }}</td> {% endif %}
 							<td>{{ toolsn.checkdate }}</td>
 							<td>{{ toolsn.is_checkedout }}</td>
 							<td>{{ toolsn.is_invault }}</td>
