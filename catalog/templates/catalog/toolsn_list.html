@@ -2,6 +2,9 @@
 
 {% block content %}
 	<h1>Tool Inventory</h1> <b>Total number of tools in list:</b> {{ toolsn_list.count }}
+	<br>
+	<a href="{% url 'tool-create' %}" class="btn btn-primary">Add new tool</a>
+	<br><br>
 
 <!-- Barcode input form -->
 	<form id="formtoolsn">
