@@ -23,7 +23,9 @@
 			<h3>Quantities</h3>
 			<div><strong>Total:</strong> {{ tool.toolcount }}</div>
 			<div><strong>Working Order:</strong> {{ tool.workingcount }}</div>
+			{% if tool.pmneeded %}
 			<div><strong>Need PM Done:</strong> {{ tool.pmcount }}</div>
+			{% endif %}
 		</div>
 	</div>
 	<div class="row">
@@ -47,7 +49,7 @@
 				</thead>
 				<tbody>
 					{% for toolsn in tool.toolsn_set.all %}
-						<tr class="{% if not toolsn.pm %}table-warning{% endif %} {% if toolsn.repair%}table-danger{% endif %}" >							<th scope="row"><a href="{% url 'toolsn-detail' toolsn.id %}">{{ toolsn }}</a></th>
+						<tr class="{% if not toolsn.pm and toolsn.tool.pmneeded %}table-warning{% endif %} {% if toolsn.repair%}table-danger{% endif %}" >							<th scope="row"><a href="{% url 'toolsn-detail' toolsn.id %}">{{ toolsn }}</a></th>
 							<td>{{ toolsn.location }}</td>
 							<td>{{ toolsn.repair }}</td>
 							{% if tool.pmneeded %} <td>{{ toolsn.pm }}</td> {% endif %}

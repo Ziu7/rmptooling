@@ -25,7 +25,9 @@ SECRET_KEY = '^_+(o_)mzzc2(xcdfn0hgym#d3p6e#v+t3@(gb4m&m)@mj)s4m'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+'rmptooling.pythonanywhere.com'
+]
 
 
 # Application definition
@@ -39,6 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'catalog.apps.CatalogConfig',
 	'import_export',
+	'nexus',
+	'gargoyle',
 ]
 
 MIDDLEWARE = [
@@ -77,8 +81,11 @@ WSGI_APPLICATION = 'rmptools.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'rmptooling$catalog',
+        'USER': 'rmptooling',
+        'PASSWORD': '2zTWU7LbFj11',
+        'HOST': 'rmptooling.mysql.pythonanywhere-services.com',
     }
 }
 
@@ -111,10 +118,21 @@ TIME_ZONE = 'America/Toronto'
 
 USE_I18N = True
 
-USE_L10N = True
+USE_L10N = False
 
 USE_TZ = True
 
+DATETIME_FORMAT = 'd-M-Y H:i'
+
+DATETIME_INPUT_FORMATS =[
+    '%d-%m-%Y %H:%M'
+]
+
+DATE_FORMAT = 'd-M-Y'
+
+DATE_INPUT_FORMATS = [
+    '%d-%m-%Y',
+]
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/

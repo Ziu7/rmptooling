@@ -12,7 +12,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin #permission requi
 from django.contrib.auth.models import User #for use with methods associated with users
 from django.db import models
 from django import forms #form class for creating user input forms
-from .models import Discipline, Location, Tool, ToolSN, VaultLog, BorrowLog
+from .models import Location, Tool, ToolSN, VaultLog, BorrowLog
 from .forms import newToolSNForm, BorrowToolForm, NewLocationForm
 
 #View for index (regular function)
@@ -21,9 +21,9 @@ def index(request):
 	num_tool=Tool.objects.all().count()
 	num_toolSN=ToolSN.objects.all().count()
 	num_repair=ToolSN.objects.filter(repair='True').count()
-	num_pm=ToolSN.objects.filter(pm='False').count()
+	num_pm=ToolSN.objects.filter(pm='False',tool__pmneeded='True').count()
 	#Tools in need of urgent attention (Under min req)
-	urgent_tools = Tool.objects.raw('select c.*, (Select count(*) from catalog_toolsn as s where c.id = s.tool_id and s.repair = 0) as num_working from catalog_tool as c where num_working < c.minneeded')
+	urgent_tools = Tool.objects.raw('select c.*, (Select count(*) from catalog_toolsn as s where c.id = s.tool_id and s.repair = 0) as num_working from catalog_tool as c HAVING  num_working < c.minneeded;')
 	return render(
 		request,
 		'catalog/index.html',
@@ -113,12 +113,12 @@ def borrow_tool(request,pk):
 		form = BorrowToolForm(request.POST)
 		#check if the form is valid:
 		if form.is_valid():
-			log = BorrowLog(toolsn = tool_sn, borrower = request.user, borrowdate = date.today(), 
+			log = BorrowLog(toolsn = tool_sn, borrower = request.user, borrowdate = date.today(),
 			reason=form.cleaned_data['reason'], notes=form.cleaned_data['notes'])
 			log.save()
 			#redirect to a new URL:
 			return HttpResponseRedirect(reverse('borrowed-tools'))
-	
+
 	form = BorrowToolForm()
 	return render(request, 'catalog/tool_borrow.html', {'form':form, 'toolsn':tool_sn})
 
@@ -128,11 +128,11 @@ def create_toolsn(request,pk):
 	if request.method == 'POST':
 		form = newToolSNForm(request.POST,pm_needed=tool.pmneeded)
 		if form.is_valid():
-			t = ToolSN(tool=tool, sn=form.cleaned_data['sn'], location=form.cleaned_data['location'], 
+			t = ToolSN(tool=tool, sn=form.cleaned_data['sn'], location=form.cleaned_data['location'],
 			pm=form.cleaned_data['pm'], repair=form.cleaned_data['repair'], comments=form.cleaned_data['comments'])
 			t.save()
 			return HttpResponseRedirect(reverse('tool-detail', kwargs={'pk':pk}))
-	
+
 	form = newToolSNForm(pm_needed=tool.pmneeded) #Edit this to disable PM if it's not needed for this tool
 	return render(request, 'catalog/toolsn_create.html', {'form':form, 'tool':tool})
 

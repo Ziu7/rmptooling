@@ -6,16 +6,16 @@
 	<meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 	{% load static %}
-	<link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
-	<script src="{% static 'js/jquery.js' %}"></script>
-	<script src="{% static 'js/bootstrap.js' %}"></script>
-
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
 	<!-- Add additional CSS in static file -->
 	<link rel="stylesheet" href="{% static 'css/styles.css' %}">
 
-	<!-- 
-	Add additional CSS for tables	
-	<link rel="stylesheet" href="{% static 'css/minimal-table.css' %}" type="text/css"> 
+	<!--
+	Add additional CSS for tables
+	<link rel="stylesheet" href="{% static 'css/minimal-table.css' %}" type="text/css">
 	-->
 
 	<!-- Add javascript for table filters -->
@@ -23,79 +23,49 @@
 
 <!-- Add javascript for table sorter -->
 	<script type="text/javascript" language="javascript" src="{% static 'js/tablesorter/jquery.tablesorter.js' %}"></script>
-
-<script>
-$(function() {
-	var $sidebar = $("#sidebar"),
-	$window = $(window),
-	offset = $sidebar.offset(),
-	topPadding = 20;
-
-	$window.scroll(function() {
-		if($window.scrollTop() > offset.top) {
-			$sidebar.stop().animate({
-				marginTop: $window.scrollTop() - offset.top + topPadding
-			});
-		} else {
-			$sidebar.stop().animate({
-				marginTop: 0
-			});
-		}
-	});
-});
-
-</script>
 </head>
 
 <body>
-
-	<div class="container-fluid">
-
-		<div class="row">
-			<div class="col-sm-2">
-				{% block sidebar %}
-					<ul class="sidebar-nav" id="sidebar">
-						<li><a href="{% url 'index' %}">Home</a></li>
-						<br>
-
-						<!-- Authenticated user options -->
-						{% if user.is_authenticated %}
-
-							<li><a href="{% url 'tool' %}">Tool Catalog</a></li>
-							<li><a href="{% url 'toolsn' %}">Tool Inventory</a></li>
-							<li><a href="{% url 'location' %}">Locations List</a></li>
-							<br>
-							<li><a href="{% url 'toolsnrepair' %}">Repair List</a></li>
-							<li><a href="{% url 'toolsnpm' %}">PM List</a></li>
-							<li><a href="{% url 'toolsndup' %}">Duplicates</a></li>
-							<br>
-							<li><a href="{% url 'vaultlog' %}">Vault Log</a></li>
-							<br>
-
-							<li><a href="{% url 'tool-create' %}"> Add New Tool </a></li>				
-							<br>
-							<li>User: {{ user.get_full_name }} </li>
-
-							<li><a href= "{% url 'my-tools' %}">My borrowed tools</a></li>
-							
-							<!-- If logged in as tool administrator options -->
-							{% if perms.catalog.can_mark_returned %}
-								<li><a href = "{% url 'borrowed-tools' %}">Manage borrowed tools</a></li>
-							{% endif %}
-							<li><a href="{% url 'borrowlog' %}">Borrow Log</a></li>
-						
-							<!-- Login/logout authenticated options -->
-							<li><a href="{% url 'logout'%}?next{{request.path}}">Logout</a></li>
-						{% else %}
-							<li><a href="{% url 'login'%}?next{{request.path}}">Login</a></li>
-						{% endif %}
-
-					</ul>
-				{% endblock %}
-			</div>
-
-
-			<div class="col-sm-10 ">
+    <nav class="navbar sticky-top navbar-toggleable-md navbar-inverse bg-inverse">
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+    <a class="navbar-brand" href="#">RMP TOOLS</a>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav">
+            <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Home</a></li>
+			<!-- Authenticated user options -->
+			{% if user.is_authenticated %}
+			<li class="nav-item dropdown">
+			    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Tool Lists</a>
+			    <div class="dropdown-menu">
+			        <a class="dropdown-item" href="{% url 'tool' %}">Tool Catalog</a>
+			        <a class="dropdown-item" href="{% url 'toolsn' %}">Tool Inventory</a>
+			        <a class="dropdown-item" href="{% url 'toolsnrepair' %}">Repair List</a>
+			        <a class="dropdown-item" href="{% url 'toolsnpm' %}">PM List</a>
+			        <a class="dropdown-item" href="{% url 'toolsndup' %}">Duplicates</a>
+			    </div>
+			</li>
+			<li class="nav-item"><a class="nav-link" href="{% url 'location' %}">Locations List</a></li>
+			<li class="nav-item"><a class="nav-link" href="{% url 'vaultlog' %}">Vault Log</a></li>
+			<li class="nav-item"><a class="nav-link" href="{% url 'tool-create' %}"> Add New Tool </a></li>
+			<li class="nav-item"><a class="nav-link" href= "{% url 'my-tools' %}">My borrowed tools</a></li>
+			<!-- If logged in as tool administrator options -->
+			{% if perms.catalog.can_mark_returned %}
+			<li class="nav-item"><a class="nav-link" href = "{% url 'borrowed-tools' %}">Manage borrowed tools</a></li>
+			{% endif %}
+			<li class="nav-item"><a class="nav-link" href="{% url 'borrowlog' %}">Borrow Log</a></li>
+			<!-- Login/logout authenticated options -->
+			<li class="nav-item"><a class="nav-link" href="{% url 'logout'%}?next{{request.path}}">Logout</a></li>
+			{% else %}
+			<li class="nav-item"><a class="nav-link" href="{% url 'login'%}?next{{request.path}}">Login</a></li>
+			{% endif %}
+        </ul>
+    </div>
+</nav>
+<div class="container-fluid">
+    <div class="row">
+			<div class="col-sm-12 ">
 				{% block content %}{% endblock %}
 
 				{% block pagination %}
@@ -121,7 +91,7 @@ $(function() {
 				{% endblock %}
 
 			</div>
-		</div>
-	</div>
+    </div>
+</div>
 </body>
 </html>

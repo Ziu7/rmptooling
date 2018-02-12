@@ -24,7 +24,7 @@ urlpatterns = [
 admin.site.site_header = 'RMP Tooling Administration'
 admin.site.site_title = 'RMP Tooling Administration'
 
-#Use include() to add URLS from the 'catalog' application 
+#Use include() to add URLS from the 'catalog' application
 from django.conf.urls import include
 
 urlpatterns += [
@@ -48,3 +48,9 @@ urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += [
 	url(r'^accounts/', include('django.contrib.auth.urls')),
 ]
+
+import nexus
+urlpatterns += [
+    url('^nexus/', include(nexus.site.urls)),
+]
+
