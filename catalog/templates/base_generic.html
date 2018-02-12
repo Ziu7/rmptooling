@@ -30,10 +30,14 @@
         <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
         </button>
-    <a class="navbar-brand" href="#">RMP TOOLS</a>
+    <a class="navbar-brand" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">RMP TOOLS</a>
+    <div class="dropdown-menu">
+        <a class="dropdown-item" href="/catalog">Tooling Database</a>
+        <a class="dropdown-item" href="#">TBD</a>
+    </div>
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
         <ul class="navbar-nav">
-            <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Catalog Home</a></li>
 			<!-- Authenticated user options -->
 			{% if user.is_authenticated %}
 			<li class="nav-item dropdown">
