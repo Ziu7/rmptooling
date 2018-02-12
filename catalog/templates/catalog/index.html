@@ -1,13 +1,6 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-
-<h1>RMP Tooling Database Home</h1>
-Quick Find Tool: <!-- Barcode input form -->
-	<form id="formtoolsn">
-		<input type ="text" id="toolsnid" placeholder ="Scan Barcode" autofocus="autofocus"/>
-		<input type="submit" value="submit" style="display: none;" onClick="javascript: window.open('/catalog/toolsn/' +document.getElementById('toolsnid').value); window.close();" />
-	</form>
 <h2>Current Inventory Overview:</h2>
 <ul>
 	<li><strong>Total Unique Tools:</strong> {{num_tool}}</li>
@@ -26,7 +19,7 @@ Quick Find Tool: <!-- Barcode input form -->
 				<th>Secondary Discipline</th>
 			</tr>
 		</thead>
-		
+
 		<tbody>
 			{% for tool in urgent_tools %}
 					<tr class="table-danger">

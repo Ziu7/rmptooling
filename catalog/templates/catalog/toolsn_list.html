@@ -2,16 +2,6 @@
 
 {% block content %}
 	<h1>Tool Inventory</h1> <b>Total number of tools in list:</b> {{ toolsn_list.count }}
-	<br>
-	<a href="{% url 'tool-create' %}" class="btn btn-primary">Add new tool</a>
-	<br><br>
-
-<!-- Barcode input form -->
-	<form id="formtoolsn">
-		<input type ="text" id="toolsnid" placeholder ="Scan Barcode" autofocus="autofocus"/>
-		<input type="submit" value="submit" style="display: none;" onClick="javascript: window.open('/catalog/toolsn/' +document.getElementById('toolsnid').value); window.close();" />
-	</form>
-	<br>
 
 	{% if toolsn_list %}
 	<table id="toolsn_list" class="table table-striped table-hover table-responsive">
