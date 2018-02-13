@@ -1,123 +1,115 @@
 <!DOCTYPE html>
 <html lan='en'>
-<head>
-
+    <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	{%block title %}<title>RMP Tooling Database</title>{% endblock %}
-	<meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-	{% load static %}
+    <!-- Bootstrap CSS -->
+    {% load static %}
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
-	<!-- Add additional CSS in static file -->
+    <!-- Add additional CSS in static file -->
 	<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    </head>
+    <body>
+        <nav class="navbar sticky-top navbar-toggleable-md navbar-inverse bg-inverse">
+            <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="navbar-brand" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">RMP TOOLS</a>
+            <div class="dropdown-menu">
+                <a class="dropdown-item" href="/catalog">Tooling Database</a>
+                <a class="dropdown-item" href="#">TBD</a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+             <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Catalog Home</a></li>
+    			<!-- Authenticated user options -->
+    			{% if user.is_authenticated %}
+    			<li class="nav-item dropdown">
+    			    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Tool Lists</a>
+    			    <div class="dropdown-menu">
+    			        <a class="dropdown-item" href="{% url 'tool' %}">Tool Catalog</a>
+    			        <a class="dropdown-item" href="{% url 'toolsn' %}">Tool Inventory</a>
+    			        <a class="dropdown-item" href="{% url 'toolsnrepair' %}">Repair List</a>
+    			        <a class="dropdown-item" href="{% url 'toolsnpm' %}">PM List</a>
+    			        <a class="dropdown-item" href="{% url 'toolsndup' %}">Duplicates</a>
+    			    </div>
+    			</li>
+    			<li class="nav-item"><a class="nav-link" href="{% url 'location' %}">Locations List</a></li>
+    			<li class="nav-item"><a class="nav-link" href="{% url 'vaultlog' %}">Vault Log</a></li>
+    			<li class="nav-item"><a class="nav-link" href="{% url 'tool-create' %}"> Add New Tool </a></li>
 
-	<!--
-	Add additional CSS for tables
-	<link rel="stylesheet" href="{% static 'css/minimal-table.css' %}" type="text/css">
-	-->
+    			<li class="nav-item dropdown">
+    			    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Borrowing</a>
+    			    <div class="dropdown-menu">
+    			        <a class="dropdown-item" href= "{% url 'my-tools' %}">My borrowed tools</a>
+    			        {% if perms.catalog.can_mark_returned %}
+    			        <a class="dropdown-item" href = "{% url 'borrowed-tools' %}">Manage borrowed tools</a>
+    			        {% endif %}
+    			        <a class="dropdown-item" href="{% url 'borrowlog' %}">Borrow Log</a>
+    			    </div>
+    			</li>
 
-	<!-- Add javascript for table filters -->
-	<script type="text/javascript" language="javascript" src="{% static 'js/tablefilter/tablefilter.js' %}"></script>
+    			<!-- Login/logout authenticated options -->
+    			<li class="nav-item"><a class="nav-link" href="{% url 'logout'%}?next{{request.path}}">Logout</a></li>
+    			{% else %}
+    			<li class="nav-item"><a class="nav-link" href="{% url 'login'%}?next{{request.path}}">Login</a></li>
+    			{% endif %}
+            </ul>
+            <form class="form-inline my-2 my-lg-0 formtoolsn">
+    		    <input type="text" id="quickSearch" placeholder ="Scan Barcode" class="form-control mr-sm-2" />
+    	    </form>
+            </div>
+        </nav>
+        <script>
+            $("#quickSearch").on("keydown",function search(e){
+                if(e.keyCode == 13){
+                    window.open('/catalog/toolsn/' +$(this).val(), "Quick Search Results");
+                    return false;
+                }
+            });
+        </script>
+        <div class="container-fluid">
+            <div class="row">
+        			<div class="col-sm-12 ">
+        				{% block content %}{% endblock %}
 
-<!-- Add javascript for table sorter -->
-	<script type="text/javascript" language="javascript" src="{% static 'js/tablesorter/jquery.tablesorter.js' %}"></script>
-</head>
+        				{% block pagination %}
 
-<body>
-    <nav class="navbar sticky-top navbar-toggleable-md navbar-inverse bg-inverse">
-        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-        </button>
-    <a class="navbar-brand" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">RMP TOOLS</a>
-    <div class="dropdown-menu">
-        <a class="dropdown-item" href="/catalog">Tooling Database</a>
-        <a class="dropdown-item" href="#">TBD</a>
-    </div>
-    <div class="collapse navbar-collapse" id="navbarNavDropdown">
-        <ul class="navbar-nav">
-            <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Catalog Home</a></li>
-			<!-- Authenticated user options -->
-			{% if user.is_authenticated %}
-			<li class="nav-item dropdown">
-			    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Tool Lists</a>
-			    <div class="dropdown-menu">
-			        <a class="dropdown-item" href="{% url 'tool' %}">Tool Catalog</a>
-			        <a class="dropdown-item" href="{% url 'toolsn' %}">Tool Inventory</a>
-			        <a class="dropdown-item" href="{% url 'toolsnrepair' %}">Repair List</a>
-			        <a class="dropdown-item" href="{% url 'toolsnpm' %}">PM List</a>
-			        <a class="dropdown-item" href="{% url 'toolsndup' %}">Duplicates</a>
-			    </div>
-			</li>
-			<li class="nav-item"><a class="nav-link" href="{% url 'location' %}">Locations List</a></li>
-			<li class="nav-item"><a class="nav-link" href="{% url 'vaultlog' %}">Vault Log</a></li>
-			<li class="nav-item"><a class="nav-link" href="{% url 'tool-create' %}"> Add New Tool </a></li>
+        					{% if is_paginated %}
+        						<div class="pagination">
+        							<span class="page-links">
+        								{% if page_obj.has_previous %}
+        									[<a href="{{ request.path }}?page=1"> << </a>]
+        									[<a href="{{ request.path }}?page={{ page_obj.previous_page_number }}"> < </a>]
+        								{% endif %}
+        								<span class="page-current">
+        									{{ page_obj.number }} of {{page_obj.paginator.num_pages }}
+        								</span>
+        								{% if page_obj.has_next %}
+        									[<a href="{{ request.path }}?page={{ page_obj.next_page_number }}"> > </a>]
+        									[<a href="{{ request.path }}?page={{ page_obj.paginator.num_pages }}"> >> </a>]
+        								{% endif %}
+        							</span>
+        						</div>
+        					{% endif %}
 
-			<li class="nav-item dropdown">
-			    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Borrowing</a>
-			    <div class="dropdown-menu">
-			        <a class="dropdown-item" href= "{% url 'my-tools' %}">My borrowed tools</a>
-			        {% if perms.catalog.can_mark_returned %}
-			        <a class="dropdown-item" href = "{% url 'borrowed-tools' %}">Manage borrowed tools</a>
-			        {% endif %}
-			        <a class="dropdown-item" href="{% url 'borrowlog' %}">Borrow Log</a>
-			    </div>
-			</li>
+        				{% endblock %}
 
-			<!-- Login/logout authenticated options -->
-			<li class="nav-item"><a class="nav-link" href="{% url 'logout'%}?next{{request.path}}">Logout</a></li>
-			{% else %}
-			<li class="nav-item"><a class="nav-link" href="{% url 'login'%}?next{{request.path}}">Login</a></li>
-			{% endif %}
-        </ul>
-        <form class="form-inline my-2 my-lg-0 formtoolsn">
-		    <input type="text" id="quickSearch" placeholder ="Scan Barcode" class="form-control mr-sm-2" />
-	    </form>
-    </div>
-</nav>
-<script>
-    $("#quickSearch").on("keydown",function search(e){
-        if(e.keyCode == 13){
-            window.open('/catalog/toolsn/' +$(this).val(), "Quick Search Results");
-            return false;
-        }
-    });
-</script>
-<div class="container-fluid">
-    <div class="row">
-			<div class="col-sm-12 ">
-				{% block content %}{% endblock %}
-
-				{% block pagination %}
-
-					{% if is_paginated %}
-						<div class="pagination">
-							<span class="page-links">
-								{% if page_obj.has_previous %}
-									[<a href="{{ request.path }}?page=1"> << </a>]
-									[<a href="{{ request.path }}?page={{ page_obj.previous_page_number }}"> < </a>]
-								{% endif %}
-								<span class="page-current">
-									{{ page_obj.number }} of {{page_obj.paginator.num_pages }}
-								</span>
-								{% if page_obj.has_next %}
-									[<a href="{{ request.path }}?page={{ page_obj.next_page_number }}"> > </a>]
-									[<a href="{{ request.path }}?page={{ page_obj.paginator.num_pages }}"> >> </a>]
-								{% endif %}
-							</span>
-						</div>
-					{% endif %}
-
-				{% endblock %}
-
-			</div>
-    </div>
-</div>
-<footer>
-            <div id="stats">
-        <!-- STATS: Total: %(total_time).2fs Python: %(python_time).2fs DB: %(db_time).2fs Queries: %(db_queries)d ENDSTATS -->
+        			</div>
+            </div>
         </div>
-</footer>
-</body>
+        <footer>
+            <div id="stats">
+            <!-- STATS: Total: %(total_time).2fs Python: %(python_time).2fs DB: %(db_time).2fs Queries: %(db_queries)d ENDSTATS -->
+            </div>
+        </footer>
+        <!-- Scripts -->
+        <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+    	<script type="text/javascript" language="javascript" src="{% static 'js/tablefilter/tablefilter.js' %}"></script>
+    	<script type="text/javascript" language="javascript" src="{% static 'js/tablesorter/jquery.tablesorter.js' %}"></script>
+    </body>
 </html>

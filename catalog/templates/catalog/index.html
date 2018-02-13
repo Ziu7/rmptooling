@@ -1,20 +1,38 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-<h2>Current Inventory Overview:</h2>
-<ul>
-	<li><strong>Total Unique Tools:</strong> {{num_tool}}</li>
-	<li><strong>Total Tool Count:</strong> {{num_toolSN}}</li>
-	<li><strong>Total requiring repair:</strong> {{num_repair}}</li>
-	<li><strong>Total requiring PM:</strong> {{num_pm}}</li>
-</ul>
+<table class="table table-responsive">
+        <tr>
+            <th colspan="2">Current Inventory Overview</th>
+        </tr>
+        <tr>
+            <th scope="row"><a href="{% url 'tool' %}">Total Unique Tools</a></th>
+            <td>{{num_tool}}</td>
+        </tr>
+        <tr>
+            <th scope="row"><a href="{% url 'toolsn' %}">Total Tool Count</a></th>
+            <td>{{num_toolSN}}</td>
+        </tr>
+        <tr class="table-danger">
+            <th scope="row"><a href="{% url 'toolsnrepair' %}">Total requiring repair</a></th>
+            <td>{{num_repair}}</td>
+        </tr>
+        <tr class="table-warning">
+            <th scope="row"><a href="{% url 'toolsnpm' %}">Total requiring PM</a></th>
+            <td>{{num_pm}}</td>
+        </tr>
+        <tr class="table-danger">
+            <th scope="row"><a href="{% url 'toolsndup' %}">Total duplicate toolsn</a></th>
+            <td>{{num_dup}}</td>
+        </tr>
+</table>
 <h3>Tools Requiring Immediate Attention</h3>
-	<table id="tool_list" class="table table-striped table-hover table-responsive">
+	<table id="tool_list" class="table table-hover table-striped table-responsive table-bordered table-sm">
 		<thead class="thead-inverse">
 			<tr>
 				<th>Tool Number (Name)</th>
-				<th>Minimum Required</th>
-				<th>Number in working order</span></th>
+				<th>Min. Required</th>
+				<th># in working order</span></th>
 				<th>Primary Discipline</th>
 				<th>Secondary Discipline</th>
 			</tr>
