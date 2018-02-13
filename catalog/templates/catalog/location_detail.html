@@ -2,8 +2,8 @@
 
 {% block content %}
 	<h1>Tools located in {{ location }}</h1><b>{{ location.toolsn_set.count }} tools here</b>
-		
-	<table id="location_detail" class="table table-striped table-hover table-responsive">
+
+	<table id="location_detail" class="table table-striped table-hover table-responsive table-sm">
 		<thead>
 			<tr>
 				<th>Tool Number (Name) - SN</th>
@@ -15,7 +15,7 @@
 		</thead>
 		<tbody>
 			{% for toolsn in location.toolsn_set.all %}
-			<tr class="{% if not toolsn.pm %}table-warning{% endif %} {% if toolsn.repair%}table-danger{% endif %}" >							
+			<tr class="{% if not toolsn.pm %}table-warning{% endif %} {% if toolsn.repair%}table-danger{% endif %}" >
 				<th scope="row"><a href="{% url 'toolsn-detail' toolsn.id %}">{{ toolsn }}</a></th>
 					<td>{{ toolsn.repair }}</td>
 					<td>{{ toolsn.pm }}</td>
@@ -24,21 +24,21 @@
 				</tr>
 			{% endfor %}
 		</tbody>
-	</table>	
-		<hr>	
+	</table>
+		<hr>
 
 <!-- table filter js -->
 	<script language="javascript" type="text/javascript">
-		var props01 = {		
+		var props01 = {
 			col_1:'none',
 			col_3: 'select',
 			col_4:'select',
 			col_5:'select',
 
 			};
-			
+
 		var tf = new TableFilter("location_detail",props01);
-		tf.init();	
+		tf.init();
 	</script>
 
 {% endblock %}

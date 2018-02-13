@@ -2,7 +2,6 @@ from django.db import models
 from django.urls import reverse #used to generate urls by reversing the url pattern
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User #for use with methods associated with users
-from datetime import date, datetime
 import uuid #Currently used way of generating unique IDs for tools
 
 #MODEL Discipline model for Primary and Secondary tool disciplines
@@ -53,7 +52,8 @@ class Tool(models.Model):
 	#returns the url to access a particular tool instance
 	def get_absolute_url(self):
 		return reverse('tool-detail', args=[str(self.id)]) #Maybe use tool name instead of ID in urls?
-	#Properties determined by the toolSNs 
+
+	#Properties determined by the toolSNs
 	@property
 	def toolcount(self):
 		return self.toolsn_set.count()
