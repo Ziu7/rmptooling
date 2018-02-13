@@ -53,12 +53,18 @@
 			<li class="nav-item"><a class="nav-link" href="{% url 'location' %}">Locations List</a></li>
 			<li class="nav-item"><a class="nav-link" href="{% url 'vaultlog' %}">Vault Log</a></li>
 			<li class="nav-item"><a class="nav-link" href="{% url 'tool-create' %}"> Add New Tool </a></li>
-			<li class="nav-item"><a class="nav-link" href= "{% url 'my-tools' %}">My borrowed tools</a></li>
-			<!-- If logged in as tool administrator options -->
-			{% if perms.catalog.can_mark_returned %}
-			<li class="nav-item"><a class="nav-link" href = "{% url 'borrowed-tools' %}">Manage borrowed tools</a></li>
-			{% endif %}
-			<li class="nav-item"><a class="nav-link" href="{% url 'borrowlog' %}">Borrow Log</a></li>
+
+			<li class="nav-item dropdown">
+			    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Borrowing</a>
+			    <div class="dropdown-menu">
+			        <a class="dropdown-item" href= "{% url 'my-tools' %}">My borrowed tools</a>
+			        {% if perms.catalog.can_mark_returned %}
+			        <a class="dropdown-item" href = "{% url 'borrowed-tools' %}">Manage borrowed tools</a>
+			        {% endif %}
+			        <a class="dropdown-item" href="{% url 'borrowlog' %}">Borrow Log</a>
+			    </div>
+			</li>
+
 			<!-- Login/logout authenticated options -->
 			<li class="nav-item"><a class="nav-link" href="{% url 'logout'%}?next{{request.path}}">Logout</a></li>
 			{% else %}
@@ -108,5 +114,10 @@
 			</div>
     </div>
 </div>
+<footer>
+            <div id="stats">
+        <!-- STATS: Total: %(total_time).2fs Python: %(python_time).2fs DB: %(db_time).2fs Queries: %(db_queries)d ENDSTATS -->
+        </div>
+</footer>
 </body>
 </html>

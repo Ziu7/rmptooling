@@ -13,44 +13,24 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+from django.conf.urls import url, include
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
-
-urlpatterns = [
-    url(r'^rmpadministration/', admin.site.urls),
-]
+from django.views.generic import RedirectView
+import nexus
 
 #admin site header and title
 admin.site.site_header = 'RMP Tooling Administration'
 admin.site.site_title = 'RMP Tooling Administration'
 
-#Use include() to add URLS from the 'catalog' application
-from django.conf.urls import include
-
-urlpatterns += [
-    url(r'^catalog/', include('catalog.urls')),
-]
-
-#Add URL maps to redirect the base URL to the 'catalog' application
-from django.views.generic import RedirectView
-
-urlpatterns += [
+urlpatterns = [
     url(r'^$', RedirectView.as_view(url='/catalog', permanent=True)),
-]
-
-#use static() to add url mapping to serve static files during development (only)
-from django.conf import settings
-from django.conf.urls.static import static
-
-urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-
-#Add Django site authentication urls (for login, logout, password management)
-urlpatterns += [
-	url(r'^accounts/', include('django.contrib.auth.urls')),
-]
-
-import nexus
-urlpatterns += [
+    url(r'^rmpadministration/', admin.site.urls),
+    url(r'^catalog/', include('catalog.urls')),
+    url(r'^accounts/', include('django.contrib.auth.urls')),
     url('^nexus/', include(nexus.site.urls)),
 ]
 
+#use static() to add url mapping to serve static files during development (only)
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
