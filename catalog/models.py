@@ -22,7 +22,6 @@ class Location(models.Model):
 	#Order by names
 	class Meta:
 		ordering = ["name"]
-		permissions = (("can_add_location", "Can add location"),)
 		verbose_name = _("Tool Locations")
 	def __str__(self):
 		return self.name
@@ -43,7 +42,6 @@ class Tool(models.Model):
 	class Meta:
 		ordering = ["id", "num"]
 		verbose_name = _("Tool")
-		permissions = (("can_edit_tool", "Can edit Tool"),)
 
 	#String representing the tool name
 	def __str__(self):

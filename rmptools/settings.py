@@ -29,6 +29,10 @@ ALLOWED_HOSTS = [
 'rmptooling.pythonanywhere.com'
 ]
 
+INTERNAL_IPS = [
+    '192.75.43.13',
+    '127.0.0.1',
+]
 
 # Application definition
 
@@ -41,9 +45,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'catalog.apps.CatalogConfig',
 	'import_export',
+	'debug_toolbar',
 	'nexus',
 	'gargoyle',
 ]
+
+STATIC_URL = '/static/'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -53,7 +60,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     #'rmptools.middlewares.StatsMiddleware', Set up this middleware
+]
+
+MIDDLEWARE_CLASSES = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'rmptools.urls'
@@ -138,10 +150,15 @@ DATE_INPUT_FORMATS = [
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
-STATIC_URL = '/static/'
 
 # Redirect to home url after login (default redirects to /account/profile/)
 LOGIN_REDIRECT_URL = '/'
 
 #EMAIL TESTING - Log any emails sent to the console
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+#def show_toolbar(request):
+#    return True
+#DEBUG_TOOLBAR_CONFIG = {
+#    "SHOW_TOOLBAR_CALLBACK" : show_toolbar,
+#}
