@@ -17,13 +17,13 @@
             <th scope="row"><a href="{% url 'toolsnrepair' %}">Total requiring repair</a></th>
             <td>{{num_repair}}</td>
         </tr>
-        <tr class="table-warning">
+        <tr class="table-warning" >
             <th scope="row"><a href="{% url 'toolsnpm' %}">Total requiring PM</a></th>
             <td>{{num_pm}}</td>
         </tr>
-        <tr class="table-danger">
+        <tr class="table-danger" style="display:hidden">
             <th scope="row"><a href="{% url 'toolsndup' %}">Total duplicate toolsn</a></th>
-            <td>{{num_dup}}</td>
+            <td>{%for q in num_dup%}{{q}}{%endfor%}</td>
         </tr>
 </table>
 <h3>Tools Requiring Immediate Attention</h3>
@@ -32,7 +32,7 @@
 			<tr>
 				<th>Tool Number (Name)</th>
 				<th>Min. Required</th>
-				<th># in working order</span></th>
+				<th>Count <span style="color:green">(Working)</span></th>
 				<th>Primary Discipline</th>
 				<th>Secondary Discipline</th>
 			</tr>
@@ -43,7 +43,7 @@
 					<tr class="table-danger">
 						<td><a href="{{ tool.get_absolute_url }}">{{tool}}</a></td>
 						<td>{{ tool.minneeded }} </td>
-						<td>{{ tool.num_working }}</td>
+					    <td>{{ tool.total_count }} <span style="color:green">({{ tool.working_count }})</span></td>
 						<td>{{ tool.primdisc }}</td>
 						<td>{{ tool.secdisc }}</td>
 					</tr>

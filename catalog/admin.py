@@ -12,7 +12,7 @@ class DisciplineAdmin(ImportExportModelAdmin):
 @admin.register(Location)
 class LocationAdmin(ImportExportModelAdmin):
 	model = Location
-	list_display = ('id','name')
+	list_display = ('id','station','name')
 
 #inline addition/ editing of ToolSN in add Tool page
 class ToolSNInline(admin.TabularInline):
@@ -47,15 +47,8 @@ class ToolSNAdmin(ImportExportModelAdmin):
 	get_secdisc.admin_order_field = 'tool'
 	get_secdisc.short_description = "Secondary Discipline"
 
-	#get 'name' field from model Tool
-	def get_toolname(self, obj):
-		return obj.tool
-
-	get_toolname.admin_order_field = 'tool'
-	get_toolname.short_description = "Tool Name"
-
-	list_display = ('tool','sn','get_toolname','location','pm','repair','checkdate','get_primdisc','get_secdisc')
-	fields = [('tool','sn'),'location','vault',('pm','repair'),'comments']
+	list_display = ('tool','sn','station','location','pm','repair','checkdate','get_primdisc','get_secdisc')
+	fields = [('tool','sn'),'location',('pm','repair'),'comments']
 	list_filter = ('location','pm','repair')
 
 

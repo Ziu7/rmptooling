@@ -2,6 +2,9 @@
 
 {% block content %}
 	<h1>{{ toolsn }}</h1>
+	{%if message %}
+    <div class="alert alert-{{status}}" role="alert">{{message}}</div>
+	{% endif %}
 	<div class="row">
 		<div class="col-md-6"><a href='{% url 'tool-detail' toolsn.tool.id %}'>See all SNs for {{toolsn.tool.num}}</a></div>
 	</div>
@@ -9,14 +12,18 @@
 		<a href="{% url 'toolsn-update' toolsn.id %}" class="btn btn-primary"> Update </a>
 		<a href="{% url 'borrow-tool' toolsn.id %}" class="btn btn-warning"> Borrow </a>
 		<a href="{% url 'toolsn-delete' toolsn.id %}" class="btn btn-danger"> Delete </a>
+		<a href="{% url 'toolsn-vault' pk=toolsn.id action='In' %}" class="btn btn-success"> Vault in </a>
+		<a href="{% url 'toolsn-vault' pk=toolsn.id action='Out' %}" class="btn btn-danger"> Vault out </a>
 	</div>
 	<table width= "500px">
-		<tr><th width="150px">Location:</th><td>{{ toolsn.location }}</td></tr>
+	    <tr><th>Station:</th><td>{{ toolsn.get_station_display }}</td></tr>
+		<tr><th>Location:</th><td>{{ toolsn.location }}</td></tr>
 		<tr><th>PM Complete?:</th><td>{{ toolsn.pm }}</td></tr>
 		<tr><th>Needs Repair?:</th><td>{{ toolsn.repair }}</td></tr>
 		<tr><th>Borrower:</th><td>{{ toolsn.borrower }}</td></tr>
 		<tr><th>Last Checked:</th><td>{{ toolsn.checkdate }}</td></tr>
 		<tr><th>Comments:</th><td>{{ toolsn.comments }}</td></tr>
+		<tr><th>In Vault?:</th><td>{{ toolsn.is_invault }}</td></tr>
 	</table>
 
 {% endblock %}

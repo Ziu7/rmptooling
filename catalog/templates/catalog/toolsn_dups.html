@@ -6,7 +6,6 @@
         This list should be kept empty. If any ToolSNs show up here it's because it has a duplicate SN number
         and must be changed to keep all of our tools unique.
     </p>
-    {% if duplicate_tools %}
 	<table id="toolsn_list" class="table table-striped table-hover table-responsive table-sm">
 		<thead class="thead-light">
 			<tr>
@@ -21,12 +20,11 @@
 					<td><a href="{% url 'tool-detail' toolsn.tool_id %}">{{ toolsn }}</a></td>
 					<td>{{ toolsn.dupcount }}</td>
 				</tr>
+			{% empty %}
+			    <tr>
+			        <td colspan="2">There are no duplicate SNs</td>
+			    </tr>
 			{% endfor %}
 		</tbody>
 	</table>
-
-	{% else %}
-		<p>There are no tools in the database. </p>
-
-	{% endif %}
 {% endblock %}

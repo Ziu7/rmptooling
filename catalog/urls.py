@@ -1,42 +1,51 @@
-from django.conf.urls import url
+from django.urls import include,path
 from . import views
 
 urlpatterns = [
-	#Standard List Views
-	url(r'^$', views.index, name='index'), #function based view
-	url(r'^tool/$' , views.ToolListView.as_view(), name='tool'),
-	url(r'^inventory/$' , views.ToolSNView.as_view(), name='toolsn'),
-	url(r'^inventory/repair$' , views.ToolSNRepairView.as_view(), name='toolsnrepair'),
-	url(r'^inventory/pm$' , views.ToolSNPMView.as_view(), name='toolsnpm'),
-	url(r'^inventory/dup$' , views.duplicateTools, name='toolsndup'),
-	url(r'^location/$', views.LocationView.as_view(), name='location'),
-	url(r'^vaultlog/$', views.VaultLogList.as_view(), name='vaultlog'),
+	path('', views.index, name='index'), #Index
 
+	#Tool paths
+	path('tool/' , include([
+	    path('', views.ToolListView.as_view(), name='tool'),
+	    path('create/', views.ToolCreate.as_view(), name='tool-create'),
+    	path('tool/<int:pk>/', include([
+    	    path('', views.ToolDetailView.as_view(), name='tool-detail'),
+    	    path('update/', views.ToolUpdate.as_view(), name='tool-update'),
+    	    path('create/', views.create_toolsn, name='toolsn-create'),
+    	])),
+    ])),
 
+	#Invetory Paths
+	path('inventory/', include([
+	    path('', views.ToolSNView.as_view(), name='toolsn'),
+	    path('repair/', views.ToolSNRepairView.as_view(), name='toolsnrepair'),
+	    path('pm/', views.ToolSNPMView.as_view(), name='toolsnpm'),
+	    path('dup/', views.duplicateTools, name='toolsndup'),
+	])),
 
-	#Detailed views
-	url(r'^tool/(?P<pk>\d+)$', views.ToolDetailView.as_view(), name='tool-detail'),
-	url(r'^location/(?P<pk>\d+)$', views.LocationDetailView.as_view(), name='location-detail'),
-	url(r'^toolsn/(?P<pk>[-\w]+)$', views.ToolSNDetailView.as_view(), name='toolsn-detail'),
+	#ToolSN Views
+	path('toolsn/<uuid:pk>/', include([
+	    path('', views.ToolSNDetailView, name='toolsn-detail'),
+	    path('update/', views.ToolSNUpdate.as_view(), name='toolsn-update'),
+	    path('delete/', views.ToolSNDelete.as_view(), name='toolsn-delete'),
+	    path('borrow/', views.borrow_tool, name='borrow-tool'),
+	    path('<str:action>', views.ToolSNDetailView, name='toolsn-vault'),
+    ])),
 
-	#Loaned tools views
-	url(r'^borrowlog/$', views.BorrowLogList.as_view(), name='borrowlog'),
-	url(r'^mytools/$', views.BorrowedToolsByUserListView.as_view(), name='my-tools'),
-	url(r'^borrowedtools/$', views.BorrowedToolsByAllListView.as_view(), name='borrowed-tools'),
-	url(r'^tool/(?P<pk>[-\w]+)/borrow/$', views.borrow_tool, name='borrow-tool'), #function based view
+	#Location paths
+	path('location/', include([
+	    path('', views.LocationView.as_view(), name='location'),
+	    path('create', views.LocationCreate.as_view(), name='location-create'),
+	    path('<int:pk>/', include([
+	        path('', views.LocationDetailView.as_view(), name='location-detail'),
+	        path('update/', views.LocationUpdate.as_view(), name='location-update'),
+	    ])),
+	])),
 
-	#ToolSN forms (Create, Update, Delete)
-	url(r'^toolsn/(?P<pk>\d+)/create$', views.create_toolsn, name='toolsn-create'),
-	url(r'^toolsn/(?P<pk>[-\w]+)/update$', views.ToolSNUpdate.as_view(), name='toolsn-update'),
-	url(r'^toolsn/(?P<pk>[-\w]+)/delete$', views.ToolSNDelete.as_view(), name='toolsn-delete'),
+	#Misc Paths
+	path('borrowlog/', views.BorrowLogList.as_view(), name='borrowlog'),
+	path('mytools/', views.BorrowedToolsByUserListView.as_view(), name='my-tools'),
+	path('borrowedtools/', views.BorrowedToolsByAllListView.as_view(), name='borrowed-tools'),
+	path('vaultlog/', views.VaultLogList.as_view(), name='vaultlog'),
 
-	#Tool forms (Create)
-	url(r'^tool/create$', views.ToolCreate.as_view(), name='tool-create'),
-
-	#Tool Checkout Forms
-	#url(r'^vaultlog/(?P<pk>[-\w]+)/(?P<action>[-\w]+)$', views.VaultUpdate.as_view(), name='vault-update'),
-
-	#Location forms (Create, Update)
-	url(r'^location/create$', views.LocationCreate.as_view(), name='location-create'),
-	url(r'^location/(?P<pk>\d+)/update$', views.LocationUpdate.as_view(), name='location-update'),
 ]

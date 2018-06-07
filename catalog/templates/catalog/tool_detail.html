@@ -1,6 +1,6 @@
 {% extends "base_generic.html" %}
-
 {% block content %}
+<a href="{% url 'tool' %}">Back to the catalog</a>
 	<h1>{{ tool }}</h1>
 
 	<div class="row">
@@ -30,7 +30,10 @@
 	</div>
 	<div class="row">
 		<div class="col-md-12">
-			<a href="{% url 'toolsn-create' tool.id %}" class="btn btn-primary"> Add new SN </a>
+		    <div class="btn-group">
+		        <a href="{% url 'tool-update' tool.id %}" class="btn btn-primary"> Update </a>
+		        <a href="{% url 'toolsn-create' tool.id %}" class="btn btn-success"> Add new SN </a>
+		    </div>
 		</div>
 	</div>
 	<hr>
@@ -50,7 +53,7 @@
 				<tbody>
 					{% for toolsn in tool.toolsn_set.all %}
 						<tr class="{% if not toolsn.pm and toolsn.tool.pmneeded %}table-warning{% endif %} {% if toolsn.repair%}table-danger{% endif %}" >							<th scope="row"><a href="{% url 'toolsn-detail' toolsn.id %}">{{ toolsn }}</a></th>
-							<td>{{ toolsn.location }}</td>
+							<td>{{toolsn.get_station_display}} - {{ toolsn.location }}</td>
 							<td>{{ toolsn.repair }}</td>
 							{% if tool.pmneeded %} <td>{{ toolsn.pm }}</td> {% endif %}
 							<td>{{ toolsn.checkdate }}</td>

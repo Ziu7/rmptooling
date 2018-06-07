@@ -16,15 +16,21 @@ class Discipline(models.Model):
 
 # MODEL Locations for the tool
 class Location(models.Model):
-	name = models.CharField(unique=True, max_length=200, help_text="Enter tool location.",verbose_name="location Name")
-	address = models.CharField(max_length=200, verbose_name="street address", default="N/A")
+	name = models.CharField(max_length=200, help_text="Enter tool location.",verbose_name="location Name")
+	stationChoices = (
+	    ('A','Annex'),
+	    ('D','DNGS'),
+	    ('T','TMB'),
+	)
+	station = models.CharField(max_length=1, verbose_name="station", choices=stationChoices, default="D")
 	notes = models.TextField(max_length=1000, help_text="Any comments that would help find this location.", blank="True")
 	#Order by names
 	class Meta:
 		ordering = ["name"]
-		verbose_name = _("Tool Locations")
+		verbose_name = _("Tool Location")
+		unique_together = ('station', 'name',)
 	def __str__(self):
-		return self.name
+		return self.get_station_display() + " " + self.name
 
 # MODEL General information for tool by tool number
 class Tool(models.Model):
@@ -32,6 +38,7 @@ class Tool(models.Model):
 	name = models.CharField(max_length=200, verbose_name="tool name", default="-")
 	minneeded = models.IntegerField(verbose_name="minimum tools requiried" , default = "3")
 	draw = models.CharField(max_length=200,blank=True, verbose_name="tool drawing(s)")
+	drawingLink = models.CharField(max_length=200,blank=True, verbose_name="drawing link")
 	dcatid = models.CharField (max_length=100, blank = True, verbose_name="DNGS CatID")
 	pcatid = models.CharField (max_length=100, blank = True, verbose_name="PNGS CatID")
 	primdisc = models.ForeignKey(Discipline, on_delete=models.SET_NULL, verbose_name = "primary discipline", related_name="primdic_tool", null=True)
@@ -73,6 +80,13 @@ class ToolSN (models.Model):
 	id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text="Unique ID for tool")
 	tool = models.ForeignKey(Tool,on_delete=models.CASCADE, verbose_name="tool no.")
 	sn = models.CharField(max_length=10, verbose_name="tool SN")
+	stationChoices = (
+	    ('O','Obselete'),
+	    ('C','Common'),
+	    ('P','PNGS'),
+	    ('D','DNGS'),
+	)
+	station = models.CharField(max_length=1, verbose_name="station", choices=stationChoices, default="D")
 	location = models.ForeignKey(Location,on_delete=models.SET_NULL, verbose_name="location of the tool", null=True)
 	pm = models.NullBooleanField(help_text="Is PM complete for this tool?", null=True)
 	repair = models.BooleanField(help_text="Does this tool need to be repaired?", default=False)
@@ -80,10 +94,13 @@ class ToolSN (models.Model):
 	comments = 	models.TextField(max_length=1000, help_text="Enter any comments for this tool as necessary.",blank=True)
 	@property
 	def is_invault(self):
-		if self.vaultlog_set.latest().action == "In":
-			return True
-		else:
-			return False
+		try:
+		    if self.vaultlog_set.latest().action == "In":
+			    return True
+		    else:
+			    return False
+		except:
+		    return False
 	@property
 	def is_borrowed(self):
 		#Check if the most recent vaultlog hasn't been returned yet

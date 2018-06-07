@@ -9,7 +9,6 @@
 		<thead>
 			<tr>
 				<th>Location</th>
-				<th>Address</th>
 				<th>Tools at location</th>
 				<th>Notes</th>
 			</tr>
@@ -18,9 +17,8 @@
 		<tbody>
 			{% for loc in location_list %}
 				<tr>
-					<td><a href="{% url 'location-detail' loc.id %}">{{ loc.name }}</a></td>
-					<td>{{loc.address}}</td>
-					<td>{{loc.toolsn_set.count}}
+					<td><a href="{% url 'location-detail' loc.id %}">{{ loc }}</a></td>
+					<td>{{loc.tool_count}}
 					<td>{{loc.notes}}</td>
 				</tr>
 

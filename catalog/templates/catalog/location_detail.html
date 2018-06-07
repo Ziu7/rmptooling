@@ -22,23 +22,9 @@
 					<td>{{ toolsn.tool.primdisc }}</td>
 					<td>{{ toolsn.tool.secdisc }}</td>
 				</tr>
+			{% empty %}
+			<tr><td colspan="5">There are no tools at this location.</td></tr>
 			{% endfor %}
 		</tbody>
 	</table>
-		<hr>
-
-<!-- table filter js -->
-	<script language="javascript" type="text/javascript">
-		var props01 = {
-			col_1:'none',
-			col_3: 'select',
-			col_4:'select',
-			col_5:'select',
-
-			};
-
-		var tf = new TableFilter("location_detail",props01);
-		tf.init();
-	</script>
-
 {% endblock %}
